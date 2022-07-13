@@ -29,8 +29,14 @@ func routes(app *config.AppConfig) http.Handler  {
 		mux.Use(middleware.Recoverer)
 		mux.Use(NoSurf)
 		mux.Use(SessionLoad)
-	
-		mux.Get("/", handlers.Repo.Home)
+
+		//fileserver calls static template and helps to lad file(img)
+		fileServer := http.FileServer(http.Dir("./static/"))
+		mux.Handle("/static/*", http.StripPrefix("/static",fileServer))
+
+		mux.Get("/",handlers.Repo.HomeIndex)
+		mux.Get("/Deluxe",handlers.Repo.DeluxeRoom)
+		mux.Get("/home", handlers.Repo.Home)
 		mux.Get("/about", handlers.Repo.About)
 	
 		return mux

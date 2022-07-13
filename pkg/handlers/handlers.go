@@ -41,6 +41,22 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, "home.page.html", &models.TemplateData{})
 }
 
+func (m *Repository) HomeIndex(w http.ResponseWriter, r *http.Request) {
+	// remoteIP := r.RemoteAddr
+	// m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
+
+	render.RenderTemplate(w, "index.page.html", &models.TemplateData{})
+}
+
+func (m *Repository) DeluxeRoom(w http.ResponseWriter, r *http.Request) {
+	// remoteIP := r.RemoteAddr
+	// m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
+
+	render.RenderTemplate(w, "Deluxe.html", &models.TemplateData{})
+}
+
+
+
 // About is the handler for the about page
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	// perform some logic
