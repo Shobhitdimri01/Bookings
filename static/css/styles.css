@@ -1,0 +1,70 @@
+.my-footer {
+    height: 5em;
+    background-color: #163b65;
+    margin-top: 1.5em;
+    padding: 1em;
+    color: white;
+    font-size: 80%;
+}
+
+.notie-container {
+    box-shadow: none;
+}
+
+.datepicker {
+    z-index: 10000;
+}
+
+.redText{
+  color: red;
+}
+.btn {
+margin-right: 0.5rem !important
+
+}
+
+.btn {
+font-size: 0.875rem;
+line-height: 1;
+font-weight: 400;
+padding: .7rem 1.5rem;
+border-radius: 0.1275rem
+
+}
+
+.container {
+margin-top: 100px
+}
+
+.toast {
+transition: 0.32s all ease-in-out
+}
+
+.toast-container--fade {
+right: 0;
+bottom: 0
+}
+
+.toast-container--fade .toast-wrapper {
+display: inline-block
+}
+
+.toast.fade-init {
+opacity: 0
+}
+
+.toast.fade-show {
+opacity: 1
+}
+
+.toast.fade-hide {
+opacity: 0
+}
+
+.Suite{
+    max-width: 50%;
+}
+
+.Deluxe-room{
+    max-width: 50%;
+}
