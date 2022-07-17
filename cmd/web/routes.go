@@ -31,13 +31,17 @@ func routes(app *config.AppConfig) http.Handler  {
 		mux.Use(SessionLoad)
 
 		//fileserver calls static template and helps to lad file(img)
-		fileServer := http.FileServer(http.Dir("./static/"))
-		mux.Handle("/static/*", http.StripPrefix("/static",fileServer))
-
-		mux.Get("/",handlers.Repo.HomeIndex)
-		mux.Get("/Deluxe",handlers.Repo.DeluxeRoom)
-		mux.Get("/home", handlers.Repo.Home)
+		mux.Get("/", handlers.Repo.Home)
 		mux.Get("/about", handlers.Repo.About)
+		mux.Get("/deluxe-rooms", handlers.Repo.Generals)
+		mux.Get("/suite-rooms", handlers.Repo.Majors)
+		mux.Get("/search-availability", handlers.Repo.Availability)
+		mux.Get("/contact", handlers.Repo.Contact)
+	
+		mux.Get("/make-reservation", handlers.Repo.Reservation)
+	
+		fileServer := http.FileServer(http.Dir("./static/"))
+		mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 	
 		return mux
 	}
