@@ -15,7 +15,8 @@
 
         <div class="row">
             <div class="col">
-                <h1 class="text-center mt-4">General's Quarters</h1>
+                <h1 class="text-center mt-4">Book Your Deluxe room here ....... </h1>
+                <p>You Can book Room of Your preference If the Dates are  available </p>
                 <p>
                     Your home away form home, set on the majestic waters of the Atlantic Ocean, this will be a vacation
                     to remember.
@@ -74,6 +75,17 @@
         attention.custom({
             title: 'Choose your dates',
             msg: html,
+            callback: function(result) {
+                console.log("called");
+
+                fetch('/search-availability-json')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        console.log(data.ok);
+                        console.log(data.message);
+                    })
+            }
         });
     })
 </script>

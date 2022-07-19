@@ -7,7 +7,7 @@
             <div class="col-md-6">
                 <h1 class="mt-3">Search for Availability</h1>
 
-                <form action="" method="post" novalidate class="needs-validation">
+                <form  action="/search-availability" method="post" novalidate class="needs-validation" autocomplete="off">
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                     <div class="row">
                         <div class="col">
@@ -22,16 +22,18 @@
                         </div>
                     </div>
 
-                    <hr>
+                     <hr>
 
-                    <button type="submit" id="animatebutton" class="btn btn-primary btn-icon-text animatebutton"> <i class="fa fa-check btn-icon-prepend"></i> Search Availability </button>
+                <div class="mb-3 form-check">
+                    <input required type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                </div>
+                <button type="submit" id="animatebutton" class="btn btn-primary btn-icon-text animatebutton"> <i class="fa fa-check btn-icon-prepend"></i> Search Availability </button>
 
-                </form>
-            </div>
-            <div class="col-md-3"></div>
+            </form>
         </div>
-
     </div>
+</div>
 {{end}}
 
 
@@ -39,7 +41,7 @@
 <script>
     const elem = document.getElementById('reservation-dates');
     const rangePicker = new DateRangePicker(elem, {
-        format: "yyyy-mm-dd",
+        format: "dd-mm-yy",
     });
 </script>
 {{end}}
