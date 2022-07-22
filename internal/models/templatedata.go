@@ -1,5 +1,7 @@
 package models
 
+import "github.com/Shobhitdimri01/Bookings/internal/forms"
+
 //Data that will be used and send to Template pages
 //Template Data holds data send from handlers to templates
 type TemplateData struct{
@@ -11,4 +13,5 @@ type TemplateData struct{
 	Flash				  string
 	Warning			   string
 	Error                string
+	Form				*forms.Form
 }
