@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/Shobhitdimri01/Bookings/pkg/config"
-	"github.com/Shobhitdimri01/Bookings/pkg/handlers"
+	"github.com/Shobhitdimri01/Bookings/internal/config"
+	"github.com/Shobhitdimri01/Bookings/internal/handlers"
 
 	//"github.com/bmizerany/pat"
 	"github.com/go-chi/chi/v5"
