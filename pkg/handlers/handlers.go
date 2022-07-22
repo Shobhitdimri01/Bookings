@@ -67,12 +67,12 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 }
 
 // Generals renders the room page
-func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) Deluxe(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r,  "deluxe.page.tmpl", &models.TemplateData{})
 }
 
 // Majors renders the room page
-func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) Suite(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r,  "suite.page.tmpl", &models.TemplateData{})
 }
 

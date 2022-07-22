@@ -33,12 +33,12 @@ func routes(app *config.AppConfig) http.Handler  {
 		//fileserver calls static template and helps to lad file(img)
 		mux.Get("/", handlers.Repo.Home)
 		mux.Get("/about", handlers.Repo.About)
-		mux.Get("/deluxe-rooms", handlers.Repo.Generals)
-		mux.Get("/suite-rooms", handlers.Repo.Majors)
+		mux.Get("/deluxe-rooms", handlers.Repo.Deluxe)
+		mux.Get("/suite-rooms", handlers.Repo.Suite)
 
 		mux.Get("/search-availability", handlers.Repo.Availability)
 		mux.Post("/search-availability", handlers.Repo.PostAvailability)
-		mux.Get("/search-availability-json", handlers.Repo.AvailabilityJson)
+		mux.Post("/search-availability-json", handlers.Repo.AvailabilityJson)
 		
 		mux.Get("/contact", handlers.Repo.Contact)
 	
