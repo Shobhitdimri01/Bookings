@@ -44,7 +44,7 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	remoteIP := r.RemoteAddr
 	m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
 
-	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "home.html", &models.TemplateData{})
 }
 
 // About is the handler for the about page
@@ -57,15 +57,20 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	stringMap["remote_ip"] = remoteIP
 
 	// send data to the template
-	render.RenderTemplate(w, r, "about.page.tmpl", &models.TemplateData{
+	render.RenderTemplate(w, r, "about.html", &models.TemplateData{
 		StringMap: stringMap,
 	})
 }
 
 // Reservation renders the make a reservation page and displays form
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r , "make-reservation.page.tmpl", &models.TemplateData{
+	var emptyReservation models.Reservation
+	data := make(map[string]interface{})
+	data["reservation"] = emptyReservation
+
+	render.RenderTemplate(w, r , "make-reservation.html", &models.TemplateData{
 		Form: forms.New(nil),
+		Data: data,
 	})
 }
 //Post Reservation handles the posting and validation of form
@@ -83,33 +88,41 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form := forms.New(r.PostForm)
-	form.Has("first_name", r)
+	//form.Has("first_name", r)
+	form.Required("first_name","last_name","email","phone")
+	form.Minlength("first_name",3,r)
+	form.IsEmail("email")
 
 	if !form.Valid(){
 		data := make(map[string] interface{})
 		data ["reservation"] = reservation
 
-		render.RenderTemplate(w, r , "make-reservation.page.tmpl", &models.TemplateData{
+		render.RenderTemplate(w, r , "make-reservation.html", &models.TemplateData{
 			Form : form,
 			Data:   data, 
 		})
 	}
 
+	//Calling Session to store Reservation details
+	m.App.Session.Put(r.Context(),"reservation",reservation)
+
+	http.Redirect(w,r,"/summary",http.StatusSeeOther)
+
 }
 
 // Generals renders the room page
 func (m *Repository) Deluxe(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r,  "deluxe.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r,  "deluxe.html", &models.TemplateData{})
 }
 
 // Majors renders the room page
 func (m *Repository) Suite(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r,  "suite.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r,  "suite.html", &models.TemplateData{})
 }
 
 // Availability renders the search availability page
 func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r ,  "search-availability.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r ,  "search-availability.html", &models.TemplateData{})
 }
 
 // PostAvailability renders the search availability page
@@ -146,6 +159,22 @@ func (m *Repository) AvailabilityJson(w http.ResponseWriter, r *http.Request) {
 
 // Contact renders the contact page
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r,  "contact.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r,  "contact.html", &models.TemplateData{})
+}
+
+//Reservation summary
+func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
+	//Pulling the data out from Session
+	reservation, ok := m.App.Session.Get(r.Context(),"reservation").(models.Reservation)
+	if !ok {
+		log.Println("Can't get item from session")
+	} 
+
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+
+	render.RenderTemplate(w, r,  "reservation-summary.html", &models.TemplateData{
+		Data : data,
+	})
 }
 
