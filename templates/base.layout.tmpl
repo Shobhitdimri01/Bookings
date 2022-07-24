@@ -58,7 +58,7 @@
     {{end}}
 
 
-    <footer class="my-footer">
+      <footer class="my-footer">
         <div class="row">
             <div class="col">
                 left
@@ -140,9 +140,21 @@
             })
         }
 
+        {{with .Error}}
+            notify("{{.}}", "error");
+        {{end}}
+
+        {{with .Flash}}
+        notify("{{.}}", "success");
+        {{end}}
+
+        {{with .Warning}}
+        notify("{{.}}", "warning");
+        {{end}}
+
         function Prompt() {
             let toast = function (c) {
-                const{
+                const {
                     msg = '',
                     icon = 'success',
                     position = 'top-end',
@@ -204,19 +216,19 @@
                     title = "",
                 } = c;
 
-                const { value: result } = await Swal.fire({
+                const {value: result} = await Swal.fire({
                     title: title,
                     html: msg,
                     backdrop: false,
                     focusConfirm: false,
                     showCancelButton: true,
                     willOpen: () => {
-                        if(c.willOpen !== undefined){
+                        if (c.willOpen !== undefined) {
                             c.willOpen();
                         }
                     },
                     didOpen: () => {
-                          if(c.didOpen !== undefined){
+                        if (c.didOpen !== undefined) {
                             c.didOpen();
                         }
                     },
