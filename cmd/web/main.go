@@ -22,33 +22,10 @@ var session *scs.SessionManager
 
 // main is the main function
 func main() {
-	//Things I have stored in Session
-	gob.Register(models.Reservation{})
-
-	// change this to true when in production
-	app.InProduction = false
-
-	// set up the session
-	session = scs.New()
-	session.Lifetime = 24 * time.Hour
-	session.Cookie.Persist = true
-	session.Cookie.SameSite = http.SameSiteLaxMode
-	session.Cookie.Secure = app.InProduction
-
-	app.Session = session
-
-	tc, err := render.CreateTemplateCache()
-	if err != nil {
-		log.Fatal("cannot create template cache")
+	err := run()
+	if err!=nil {
+		log.Fatal(err)
 	}
-
-	app.TemplateCache = tc
-	app.UseCache = false
-
-	repo := handlers.NewRepo(&app)
-	handlers.NewHandlers(repo)
-
-	render.NewTemplates(&app)
 
 	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
 
@@ -62,3 +39,35 @@ func main() {
 		log.Fatal(err)
 	}
 }
+func run() error{
+		//Things I have stored in Session
+		gob.Register(models.Reservation{})
+
+		// change this to true when in production
+		app.InProduction = false
+	
+		// set up the session
+		session = scs.New()
+		session.Lifetime = 24 * time.Hour
+		session.Cookie.Persist = true
+		session.Cookie.SameSite = http.SameSiteLaxMode
+		session.Cookie.Secure = app.InProduction
+	
+		app.Session = session
+	
+		tc, err := render.CreateTemplateCache()
+		if err != nil {
+			log.Fatal("cannot create template cache")
+			return err
+		}
+	
+		app.TemplateCache = tc
+		app.UseCache = false
+	
+		repo := handlers.NewRepo(&app)
+		handlers.NewHandlers(repo)
+	
+		render.NewTemplates(&app)
+		return nil
+	}
+
