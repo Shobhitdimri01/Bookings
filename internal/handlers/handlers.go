@@ -74,40 +74,40 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 	})
 }
 //Post Reservation handles the posting and validation of form
+// PostReservation handles the posting of a reservation form
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
-	err :=r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(err)
+		return
 	}
 
 	reservation := models.Reservation{
 		FirstName: r.Form.Get("first_name"),
-		LastName: r.Form.Get("last_name"),
-		Email: r.Form.Get("email"),
-		Phone: r.Form.Get("phone"),
+		LastName:  r.Form.Get("last_name"),
+		Email:     r.Form.Get("email"),
+		Phone:     r.Form.Get("phone"),
 	}
 
 	form := forms.New(r.PostForm)
-	//form.Has("first_name", r)
-	form.Required("first_name","last_name","email","phone")
-	form.Minlength("first_name",3,r)
+
+	form.Required("first_name", "last_name", "email")
+	form.Minlength("first_name", 3, r)
+	form.Minlength("phone", 10, r)
 	form.IsEmail("email")
 
-	if !form.Valid(){
-		data := make(map[string] interface{})
-		data ["reservation"] = reservation
-
-		render.RenderTemplate(w, r , "make-reservation.html", &models.TemplateData{
-			Form : form,
-			Data:   data, 
+	if !form.Valid() {
+		data := make(map[string]interface{})
+		data["reservation"] = reservation
+		render.RenderTemplate(w, r, "make-reservation.html", &models.TemplateData{
+			Form: form,
+			Data: data,
 		})
+		return
 	}
 
-	//Calling Session to store Reservation details
-	m.App.Session.Put(r.Context(),"reservation",reservation)
-
-	http.Redirect(w,r,"/summary",http.StatusSeeOther)
-
+	m.App.Session.Put(r.Context(), "reservation", reservation)
+	http.Redirect(w, r, "/summary", http.StatusSeeOther)
 }
 
 // Generals renders the room page
