@@ -2,7 +2,7 @@ package forms
 
 import (
 	"fmt"
-	"net/http"
+	//"net/http"
 	"net/url"
 	"strings"
 
@@ -40,19 +40,23 @@ func(f *Form) Required (fields ...string){
 }
 
 //Checks if required form field is in post and not empty
-func (f *Form) Has (field string, r *http.Request)bool{
-	 x := r.Form.Get(field)
+func (f *Form) Has (field string)bool{
+	 x := f.Get(field)
 	 if x =="" {
 		
 		return false
 	 }
 	 return true
 }
-
+type L struct{
+	Y int
+}
+var LengthContainer L
 //Checks minimum length
-func (f *Form) Minlength (field string, length int, r *http.Request ) bool {
-	x := r.Form.Get(field)
-	if len(x) <length {
+func (f *Form) Minlength (field string, length int) bool {
+	x := f.Get(field)
+	 LengthContainer.Y = length
+	 	if len(x) <length {
 		f.Errors.Add(field , fmt.Sprintf("This field should be atleast %d character long",length))
 		return false
 	}
