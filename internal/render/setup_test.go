@@ -9,6 +9,7 @@ import (
 	"github.com/Shobhitdimri01/Bookings/internal/models"
 	"time"
 	"net/http"
+	"log"
 )
 
 var session *scs.SessionManager
@@ -19,7 +20,12 @@ func TestMain(m *testing.M){
 
 		// change this to true when in production
 		testApp.InProduction = false
-	
+
+		infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+		testApp.InfoLog = infoLog
+
+		errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+		testApp.ErrorLog = errorLog
 		// set up the session
 		session = scs.New()
 		session.Lifetime = 24 * time.Hour
