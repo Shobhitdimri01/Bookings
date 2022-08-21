@@ -4,7 +4,7 @@
 - Uses [alex edwards scs session management](github.com/alexedwards/scs)
 - Uses [nosurf](github.com/justinas/nosurf)
 - Uses [soda(Simple Oracle Document Access)](github.com/gobuffalo/pop/v6/soda@latest)
-### Database <img src="https://www.flaticon.com/free-icons/database" title="database icons"alt="database" width="40" height="40"/>
+### Database <img src="https://www.svgrepo.com/download/134198/database.svg" title="database icons"alt="database" width="40" height="40"/>
 
 
 -  PostgreSQL      <img src="https://raw.githubusercontent.com/devicons/devicon/1119b9f84c0290e0f0b38982099a2bd027a48bf1/icons/postgresql/postgresql-original-wordmark.svg" title="PostgreSQL"  alt="PostgreSQL" width="40" height="40"/>&nbsp;
