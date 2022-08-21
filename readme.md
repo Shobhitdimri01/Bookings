@@ -4,7 +4,11 @@
 - Uses the [chi router](github.com/go-chi/chi)
 - Uses [alex edwards scs session management](github.com/alexedwards/scs)
 - Uses [nosurf](github.com/justinas/nosurf)
--Uses [soda(Simple Oracle Document Access)](github.com/gobuffalo/pop/v6/soda@latest)
+- Uses [soda(Simple Oracle Document Access)](github.com/gobuffalo/pop/v6/soda@latest)
 
-Database : PostgreSQL
-SQLClient Application Tool : DBeaver
+### Database : PostgreSQL
+### SQLClient Application Tool : DBeaver
+
+### 🤝 Connect with me:
+
+<a href="www.linkedin.com/in/shobhit-dimri"><img align="left" src="https://raw.githubusercontent.com/yushi1007/yushi1007/main/images/linkedin.svg" alt="ShobhitDimri | LinkedIn" width="21px"/></a>
