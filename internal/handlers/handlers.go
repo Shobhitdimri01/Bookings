@@ -71,6 +71,7 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 		Data: data,
 	})
 }
+
 //Post Reservation handles the posting and validation of form
 // PostReservation handles the posting of a reservation form
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {

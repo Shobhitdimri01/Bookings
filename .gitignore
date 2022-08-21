@@ -1,3 +1,8 @@
 .idea
 .DS_Store
 coverage.out
+PROJECT_BOOKING
+PROJECT_BOOKING.exe
+database.yml
+run.sh
+run.bat
