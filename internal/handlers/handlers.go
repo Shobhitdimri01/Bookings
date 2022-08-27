@@ -3,30 +3,34 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+
 	//"log"
 	"net/http"
 
 	"github.com/Shobhitdimri01/Bookings/internal/config"
+	"github.com/Shobhitdimri01/Bookings/internal/driver"
 	"github.com/Shobhitdimri01/Bookings/internal/forms"
 	"github.com/Shobhitdimri01/Bookings/internal/helpers"
 	"github.com/Shobhitdimri01/Bookings/internal/models"
 	"github.com/Shobhitdimri01/Bookings/internal/render"
+	"github.com/Shobhitdimri01/Bookings/internal/repository"
+	"github.com/Shobhitdimri01/Bookings/internal/repository/dbrepo"
 )
 
 //Repo is repository used by handlers
 var Repo *Repository
 
-//Repository is a type of repo
-type Repository struct{
-	App  *config.AppConfig
+// Repository is the repository type
+type Repository struct {
+	App *config.AppConfig
+	DB  repository.DataBaseRepo
 }
 
-
-
-//New Repo creates the new repository
-func NewRepo(a *config.AppConfig) *Repository{
+// NewRepo creates a new repository
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		DB:  dbrepo.NewPostgresRepo(db.SQL, a),
 	}
 }
 

@@ -3,6 +3,7 @@
 coverage.out
 PROJECT_BOOKING
 PROJECT_BOOKING.exe
-database.yml
-run.sh
 run.bat
+coverage.out
+run.sh
+database.yml
