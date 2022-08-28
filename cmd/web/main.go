@@ -47,6 +47,9 @@ func main() {
 func run() (*driver.DB,error){
 		//Things I have stored in Session
 		gob.Register(models.Reservation{})
+		gob.Register(models.Room{})
+		gob.Register(models.User{})
+		gob.Register(models.Restriction{})
 
 		infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 		app.InfoLog = infoLog
@@ -66,12 +69,12 @@ func run() (*driver.DB,error){
 		app.Session = session
 
 		//Connect to Database
-		log.Println("\n\nConnecting to database.............")
+		fmt.Println("\n\nConnecting to database.............")
 		db,err :=driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=postgres password=postgres")
 		if err!=nil{
 			log.Fatal("Cannot connect to database ! dying .....",err.Error())
 		}
-		log.Println("\n\n############# Succesfully Connected to database ############")
+		fmt.Println("\n\n############# Succesfully Connected to database ############")
 		
 	
 		tc, err := render.CreateTemplateCache()
@@ -86,7 +89,7 @@ func run() (*driver.DB,error){
 		repo := handlers.NewRepo(&app,db)
 		handlers.NewHandlers(repo)
 	
-		render.NewTemplates(&app)
+		render.NewRenderer(&app)
 		return db,err
 	}
 

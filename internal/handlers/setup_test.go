@@ -13,7 +13,7 @@ import (
 	"github.com/Shobhitdimri01/Bookings/internal/config"
 	"github.com/Shobhitdimri01/Bookings/internal/models"
 	"github.com/Shobhitdimri01/Bookings/internal/render"
-	"github.com/Shobhitdimri01/Bookings/internal/repository/dbrepo"
+	//  "github.com/Shobhitdimri01/Bookings/internal/repository/dbrepo"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -56,7 +56,7 @@ func getRoutes() http.Handler {
 	repo := NewRepo(&app)
 	NewHandlers(repo)
 
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)

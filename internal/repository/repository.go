@@ -1,6 +1,9 @@
 package repository
 
-type DataBaseRepo interface{
-	AllUsers() bool
-}
+import "github.com/Shobhitdimri01/Bookings/internal/models"
 
+type DataBaseRepo interface {
+	AllUsers() 						bool
+	
+	InsertReservation(res models.Reservation)	error
+}
