@@ -15,7 +15,7 @@ func TestNoSurf(t *testing.T) {
 		//do nothing
 
 	default:
-		t.Error(fmt.Sprintf("type is not http.Handler , but of type %T",v))
+		t.Errorf(fmt.Sprintf("type is not http.Handler , but of type %T",v))
 	}
 }
 func TestSessionLoad(t *testing.T) {
@@ -27,6 +27,6 @@ func TestSessionLoad(t *testing.T) {
 		//do nothing
 
 	default:
-		t.Error(fmt.Sprintf("type is not http.Handler , but of type %T",v))
+		t.Errorf(fmt.Sprintf("type is not http.Handler , but of type %T",v))
 	}
 }

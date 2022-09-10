@@ -10,12 +10,12 @@ import (
 //This struct and function give ease to connect to any database(MongoDb,MariaDb ...etc) eg:-->Here we are Connecting to Postgres
 type postgresDBRepo struct {
 	App *config.AppConfig
-	Db 	*sql.DB	
+	DB  *sql.DB
 }
 
-func NewPostgresRepo(conn *sql.DB,a *config.AppConfig) repository.DataBaseRepo{
+func NewPostgresRepo(conn *sql.DB, a *config.AppConfig) repository.DatabaseRepo{
 	return &postgresDBRepo{
-		App:a,
-		Db:conn,
+		App: a,
+		DB:  conn,
 	}
 }
