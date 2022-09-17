@@ -1,0 +1,39 @@
+{{template "base" .}}
+
+{{define "content"}}
+<style>
+    a:link {
+      color: rgb(170, 170, 15);
+      background-color: transparent;
+      text-decoration: none;
+    }
+    
+    a:hover {
+      color: rgb(4, 48, 40);
+      background-color: transparent;
+      text-decoration: underline;
+    }
+    </style>
+<body style="background-color:rgb(200, 212, 212);">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <table>
+                    <thead>
+                <h1><strong>
+                    <em><u>Choose a Room</u></em>
+                </strong></h1> 
+                </thead>
+                    {{$rooms := index .Data "rooms"}}
+                    {{ range $rooms}}
+                    <ul>
+                        <li><a href="/choose-room/{{.ID}}" > {{.RoomName}}</a></li>
+                        <br>
+                    {{end}}
+                    </ul>
+                    </table>
+            </div>
+        </div>
+    </div>
+</body> 
+{{end}}

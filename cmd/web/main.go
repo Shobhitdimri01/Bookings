@@ -32,7 +32,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.SQL.Close()
-	fmt.Printf("\n\nStaring application on port %s\n", portNumber)
+	fmt.Println("============================================================================================================")
+	fmt.Printf("\t\tRunning application on port %s ...........\n", portNumber)
+	fmt.Println("============================================================================================================")
 
 	srv := &http.Server{
 		Addr:    portNumber,
@@ -74,8 +76,9 @@ func run() (*driver.DB,error){
 		if err!=nil{
 			log.Fatal("Cannot connect to database ! dying .....",err.Error())
 		}
-		fmt.Println("\n\n############# Succesfully Connected to database ############")
-		
+		fmt.Println("=======================+++++++++++++++++++++++++++++++++++++++++++++========================================")
+		fmt.Println("\t\t+----------------Succesfully Connected to PostgreSQL database----------------+")
+		fmt.Println("=======================+++++++++++++++++++++++++++++++++++++++++++++========================================")
 	
 		tc, err := render.CreateTemplateCache()
 		if err != nil {
