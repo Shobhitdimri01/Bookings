@@ -3,7 +3,6 @@
 
 {{define "content"}}
 
-    {{$res := index  .Data "reservation"}}
     <div class="container">
         <div class="row">
             <div class="col">
@@ -13,26 +12,36 @@
 
                 <table class="table table-striped">
                     <thead></thead>
+                    {{$info := index .Data "reservation"}}
                     <tbody>
+                        <p style="color:rgba(4, 177, 18, 0.999)"><strong><b><u>Reservation Detail : </u></b><br>
+                            Room : {{$info.Room.RoomName}}<br>
+                            Arrival   : {{index .StringMap "start_date"}}<br>
+                            Departure  :{{index .StringMap "end_date"}}
+                        </strong> </p>
                         <tr class="table-success">
                             <td>Name:</td>
-                            <td>{{$res.FirstName}}</td>
+                            <td>{{$info.FirstName}} {{$info.LastName}}</td>
                         </tr>
                         <tr class="table-warning">
+                            <td>Room:</td>
+                            <td>{{$info.Room.RoomName}}</td>
+                        </tr>
+                        <tr class="table-success">
                             <td>Arrival:</td>
-                            <td></td>
-                        </tr>
-                        <tr class="table-success">
-                            <td>Departure:</td>
-                            <td></td>
+                            <td>{{index .StringMap "start_date"}}</td>
                         </tr>
                         <tr class="table-warning">
-                            <td>Email:</td>
-                            <td>{{$res.Email}}</td>
+                            <td>Departure:</td>
+                            <td>{{index .StringMap "end_date"}}</td>
                         </tr>
                         <tr class="table-success">
+                            <td>Email:</td>
+                            <td>{{$info.Email}}</td>
+                        </tr>
+                        <tr class="table-warning">
                             <td>Phone:</td>
-                            <td>{{$res.Phone}}</td>
+                            <td>{{$info.Phone}}</td>
                         </tr>
                     </tbody>
                 </table>
