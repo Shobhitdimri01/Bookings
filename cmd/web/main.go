@@ -32,6 +32,12 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.SQL.Close()
+
+	defer close(app.MailChan)
+
+	fmt.Println("Starting mail listener....")
+	ListenforMail()
+
 	fmt.Println("============================================================================================================")
 	fmt.Printf("\t\tRunning application on port %s ...........\n", portNumber)
 	fmt.Println("============================================================================================================")
@@ -52,6 +58,10 @@ func run() (*driver.DB,error){
 		gob.Register(models.Room{})
 		gob.Register(models.User{})
 		gob.Register(models.Restriction{})
+
+		//creating channel for sending email
+		mailchan := make(chan models.MailData)
+		app.MailChan = mailchan
 
 		infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 		app.InfoLog = infoLog

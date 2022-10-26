@@ -213,6 +213,24 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	htmlmessage := fmt.Sprintf(`
+	<strong>Reservation Confirmation </strong><br>
+	Dear %s,<br>
+	This is to confirm your reservation from %s to %s
+	
+	`, reservation.FirstName, reservation.StartDate.Format("2006-01-01"), reservation.EndDate.Format("2006-01-02"))
+
+	//send notification-first to  guest
+	msg := models.MailData{
+		To:       reservation.Email,
+		From:     "Hotels-Booking@book.com",
+		Subject:  "Reservation Confirmation",
+		Content:  htmlmessage,
+		Template: "basic.html",
+	}
+
+	m.App.MailChan <- msg
+
 	m.App.Session.Put(r.Context(), "reservation", reservation)
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
 
@@ -301,57 +319,57 @@ type jsonresponse struct {
 
 //AvailabilityJson handles request for availability and sends JSON as response
 func (m *Repository) AvailabilityJson(w http.ResponseWriter, r *http.Request) {
-// need to parse request body
-err := r.ParseForm()
-if err != nil {
-	// can't parse form, so return appropriate json
-	resp := jsonresponse{
-		Ok:      false,
-		Message: "Internal server error",
+	// need to parse request body
+	err := r.ParseForm()
+	if err != nil {
+		// can't parse form, so return appropriate json
+		resp := jsonresponse{
+			Ok:      false,
+			Message: "Internal server error",
+		}
+
+		out, _ := json.MarshalIndent(resp, "", "     ")
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(out)
+		return
 	}
 
-	out, _ := json.MarshalIndent(resp, "", "     ")
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(out)
-	return
-}
+	sd := r.Form.Get("start")
+	ed := r.Form.Get("end")
 
-sd := r.Form.Get("start")
-ed := r.Form.Get("end")
+	layout := "2006-01-02"
+	startDate, _ := time.Parse(layout, sd)
+	endDate, _ := time.Parse(layout, ed)
 
-layout := "2006-01-02"
-startDate, _ := time.Parse(layout, sd)
-endDate, _ := time.Parse(layout, ed)
+	roomID, _ := strconv.Atoi(r.Form.Get("room_id"))
 
-roomID, _ := strconv.Atoi(r.Form.Get("room_id"))
+	available, err := m.DB.SearchAvailabilityByDatesByRoomID(startDate, endDate, roomID)
+	if err != nil {
+		// got a database error, so return appropriate json
+		resp := jsonresponse{
+			Ok:      false,
+			Message: "Error querying database",
+		}
 
-available, err := m.DB.SearchAvailabilityByDatesByRoomID(startDate, endDate, roomID)
-if err != nil {
-	// got a database error, so return appropriate json
+		out, _ := json.MarshalIndent(resp, "", "     ")
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(out)
+		return
+	}
 	resp := jsonresponse{
-		Ok:      false,
-		Message: "Error querying database",
+		Ok:        available,
+		Message:   "",
+		StartDate: sd,
+		EndDate:   ed,
+		RoomID:    strconv.Itoa(roomID),
 	}
 
+	// I removed the error check, since we handle all aspects of
+	// the json right here
 	out, _ := json.MarshalIndent(resp, "", "     ")
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
-	return
-}
-resp := jsonresponse{
-	Ok:        available,
-	Message:   "",
-	StartDate: sd,
-	EndDate:   ed,
-	RoomID:    strconv.Itoa(roomID),
-}
-
-// I removed the error check, since we handle all aspects of
-// the json right here
-out, _ := json.MarshalIndent(resp, "", "     ")
-
-w.Header().Set("Content-Type", "application/json")
-w.Write(out)
 }
 
 // Contact renders the contact page
