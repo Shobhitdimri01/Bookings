@@ -223,7 +223,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	//send notification-first to  guest
 	msg := models.MailData{
 		To:       reservation.Email,
-		From:     "Hotels-Booking@book.com",
+		From:     "Shobhitdimri7@gmail.com",
 		Subject:  "Reservation Confirmation",
 		Content:  htmlmessage,
 		Template: "basic.html",
