@@ -2,44 +2,154 @@
 
 {{define "content"}}
 
-<style type="text/css">
-    body{
-        background: linear-gradient(110deg, #e7d942 60%, #b4bcba 60%);;
-        background-size: cover;
-        
+<style>
+   /* Importing fonts from Google */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Reseting */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    height: 100vh;
+  background: linear-gradient(
+    to right,
+    pink 0%,
+    pink 50%,
+    paleturquoise 50%,
+    paleturquoise 100%
+  );
+  justify-content: center;
+  align-items: center;
     }
-</style>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1 class="mt-3 font-effect-fire" ><strong>My Palace Login</strong></h1>
+.wrapper {
+    max-width: 350px;
+    min-height: 500px;
+    margin: 80px auto;
+    padding: 40px 30px 30px 30px;
+    background-color: #f0f0e4;
+    border-radius: 15px;
+}
 
-                <form method="post" action="/user/login" novalidate>
-                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}"> 
-                    <div class="form-group mt-3">
-                        <label for="email">Email</label>
-                        {{with .Form.Errors.Get "email"}}
-                            <label class="text-danger">{{.}}</label>
-                        {{end}}
-                        <input class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}"
-                               id="email" autocomplete="off" type='email'
-                               name='email' value="" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        {{with .Form.Errors.Get "password"}}
-                            <label class="text-danger">{{.}}</label>
-                        {{end}}
-                        <input class="form-control {{with .Form.Errors.Get "password"}} is-invalid {{end}}"
-                               id="password" autocomplete="off" type='password'
-                               name='password' value="" required>
-                    </div>
-                    <hr>
+.logo {
+    width: 80px;
+    margin: auto;
+}
 
-                    <input type ="submit" class="btn btn-primary" value="Submit">
-                </form>
+.logo img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0px 0px 3px #5f5f5f,
+        0px 0px 0px 5px #6797bd,
+        8px 8px 15px #a7aaa7,
+        -8px -8px 15px #fff;
+}
 
-            </div>
-        </div>
+.wrapper .name {
+    font-weight: 600;
+    font-size: 1.4rem;
+    letter-spacing: 1.3px;
+    padding-left: 10px;
+    color: #555;
+}
+
+.wrapper .form-field input {
+    width: 100%;
+    display: block;
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 1.2rem;
+    color: #666;
+    padding: 10px 15px 10px 10px;
+    /* border: 1px solid red; */
+}
+
+.wrapper .form-field {
+    padding-left: 10px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    box-shadow: inset 8px 8px 8px #cbced1, inset -8px -8px 8px #fff;
+}
+
+.wrapper .form-field .fas {
+    color: #555;
+}
+
+.wrapper .btn {
+    box-shadow: none;
+    width: 100%;
+    height: 40px;
+    background-color: #03A9F4;
+    color: #fff;
+    border-radius: 25px;
+    box-shadow: 3px 3px 3px #b1b1b1,
+        -3px -3px 3px #fff;
+    letter-spacing: 1.3px;
+}
+
+.wrapper .btn:hover {
+    background-color: #039BE5;
+}
+
+.wrapper a {
+    text-decoration: none;
+    font-size: 0.8rem;
+    color: #03A9F4;
+}
+
+.wrapper a:hover {
+    color: #039BE5;
+}
+
+@media(max-width: 380px) {
+    .wrapper {
+        margin: 30px 20px;
+        padding: 40px 15px 15px 15px;
+    }
+}
+    </style>
+<div class="wrapper">
+    <div class="logo">
+        <img src="https://www.freepnglogos.com/uploads/hotel-logo-png/download-building-hotel-clipart-png-33.png" alt="">
     </div>
+    <div class="text-center mt-4 name">
+        <strong>ISKON</strong>
+    </div>
+    <form method="post" action="/user/login" novalidate>
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}"> 
+    <form class="p-3 mt-3">
+        <label for="email">Email</label>
+        {{with .Form.Errors.Get "email"}}
+            <label class="text-danger">{{.}}</label>
+        {{end}}
+        <input class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}"
+               id="email" autocomplete="off" type='email'
+               name='email' value="" required>
+    <div class="form-group">
+        <label for="password">Password</label>
+        {{with .Form.Errors.Get "password"}}
+            <label class="text-danger">{{.}}</label>
+        {{end}}
+        <input class="form-control {{with .Form.Errors.Get "password"}} is-invalid {{end}}"
+               id="password" autocomplete="off" type='password'
+               name='password' value="" required>
+            
+    </div>
+    <hr>
+
+    <button class="btn mt-3">Login</button>
+</div>
+</div>
+</form>
+
+</div>
+</div>
+</div>
 {{end}}

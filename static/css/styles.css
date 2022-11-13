@@ -1,22 +1,13 @@
-/* .my-footer {
+.my-footer {
     height: 5em;
     background-color: #163b65;
     margin-top: 1.5em;
     padding: 1em;
     color: white;
     font-size: 80%;
-} */
-
-.my-footer
-{
-    position: fixed;
-            padding: 10px 10px 0px 10px;
-            bottom: 0;
-            width: 100%;
-            /* Height of the footer*/
-            height: 40px;
-            background: grey;
 }
+
+
 .notie-container {
     box-shadow: none;
 }
