@@ -30,13 +30,13 @@ func SessionLoad(next http.Handler) http.Handler {
 //by making anonymous function so that we can call
 //IsAuth() from Helper if doesn't fail we pass on 
 //to next middleware it protects and ensure only logged in people have access.
-func Auth(next http.Handler) http.Handler{
-	return http.HandlerFunc(func(w http.ResponseWriter,r *http.Request){
-		if !helpers.IsAuthenticated(r){
-		session.Put(r.Context(),"error","Log in First!")
-		http.Redirect(w,r,"/user/login",http.StatusSeeOther)
-		return
+func Auth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !helpers.IsAuthenticated(r) {
+			session.Put(r.Context(), "error", "Log in first!")
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+			return
 		}
-		next.ServeHTTP(w,r)
+		next.ServeHTTP(w, r)
 	})
 }
