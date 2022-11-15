@@ -7,32 +7,30 @@
     <div class="logo">
         <img src="/static/images/logo (1).png" alt="">
     </div>
-    <div class="text-center mt-4 name">
-        <strong>ISKON</strong>
-    </div>
     <form method="post" action="/user/login" novalidate>
-        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}"> 
-    <form class="p-3 mt-3">
-        <label for="email">Email</label>
-        {{with .Form.Errors.Get "email"}}
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        <div class="text-center mt-4 name">
+            <strong>ISKON</strong>
+        </div>
+        <form class="p-3 mt-3">
+            <label for="email">Email</label>
+            {{with .Form.Errors.Get "email"}}
             <label class="text-danger">{{.}}</label>
-        {{end}}
-        <input class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}"
-               id="email" autocomplete="off" type='email'
-               name='email' value="" required>
-    <div class="form-group">
-        <label for="password">Password</label>
-        {{with .Form.Errors.Get "password"}}
-            <label class="text-danger">{{.}}</label>
-        {{end}}
-        <input class="form-control {{with .Form.Errors.Get "password"}} is-invalid {{end}}"
-               id="password" autocomplete="off" type='password'
-               name='password' value="" required>
-            
-    </div>
-    <hr>
+            {{end}}
+            <input class="form-control {{with .Form.Errors.Get " email"}} is-invalid {{end}}" id="email"
+                autocomplete="off" type='email' name='email' value="" required>
+            <div class="form-group">
+                <label for="password">Password</label>
+                {{with .Form.Errors.Get "password"}}
+                <label class="text-danger">{{.}}</label>
+                {{end}}
+                <input class="form-control {{with .Form.Errors.Get " password"}} is-invalid {{end}}" id="password"
+                    autocomplete="off" type='password' name='password' value="" required>
 
-    <button class="btn mt-3">Login</button>
+            </div>
+            <hr>
+
+            <button class="btn mt-3">Login</button>
 </div>
 </div>
 </form>

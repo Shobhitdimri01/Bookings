@@ -510,5 +510,9 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin-dashboard.html", &models.TemplateData{})
+	if render.LoggedIn {
+		render.Template(w, r, "admin.html", &models.TemplateData{})
+	} else {
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+	}
 }
