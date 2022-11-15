@@ -504,6 +504,7 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	_ = m.App.Session.Destroy(r.Context())
 	_ = m.App.Session.RenewToken(r.Context())
+	render.LoggedIn = false
 
 	m.App.Session.Put(r.Context(), "flash", "Logged Out Successfully")
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
