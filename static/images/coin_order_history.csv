@@ -1,0 +1,7 @@
+client_id,isin,scheme_name,plan,transaction_mode,settlement_id,trade_date,ordered_at,folio_number,amount,units,nav,status,exchange_order_id,remarks,tag
+OSD112,INF663L01DV3,PGIM India Midcap Opportunities Fund,Growth,BUY,2223152,13/11/2022,06:07 PM,91014669173,3000,60.323,49.73,COMPLETE,556030415,,coinandroidsip
+OSD112,INF846K01DP8,Axis Bluechip Fund,Growth,BUY,2223152,13/11/2022,06:07 PM,910153004145,2000,39.855,50.18,COMPLETE,556030414,,coinandroidsip
+OSD112,INF109K012M7,ICICI Prudential Nifty 50 Index Fund,Growth,BUY,2223152,13/11/2022,06:07 PM,22055462/30,6000,31.993,187.5303,COMPLETE,556030412,,coinandroidsip
+OSD112,INF879O01027,Parag Parikh Flexi Cap Fund,Growth,BUY,2223152,13/11/2022,06:07 PM,12466684,3000,57.312,52.3423,COMPLETE,556030413,,coinandroidsip
+OSD112,INF663L01DV3,PGIM India Midcap Opportunities Fund,Growth,BUY,2223149,08/11/2022,05:56 PM,91014669173,2000,39.752,50.31,COMPLETE,552470591,,coinandroidsip
+OSD112,INF109K012M7,ICICI Prudential Nifty 50 Index Fund,Growth,BUY,2223149,08/11/2022,05:56 PM,22055462/30,4000,21.53,185.7804,COMPLETE,552470590,,coinandroidsip

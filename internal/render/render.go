@@ -31,7 +31,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 	td.CSRFToken = nosurf.Token(r)
 	if app.Session.Exists(r.Context(), "user_id") {
 		td.IsAuthenticated = 1
-		LoggedIn = true
+		LoggedIn = true		
 	}
 	app.InfoLog.Println("LoggedIn", LoggedIn)
 	return td
