@@ -510,6 +510,30 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
+
+//Admin Functionality
+
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 		render.Template(w, r, "admin.html", &models.TemplateData{})
+}
+
+func (m *Repository) AdminNewReservations (w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin_new_reservation.html", &models.TemplateData{})
+}
+func (m *Repository)AdminAllReservations(w http.ResponseWriter, r *http.Request) {
+	reservations, err := m.DB.AllReservations()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+
+	render.Template(w, r, "admin_all_reservation.html", &models.TemplateData{
+		Data: data,
+	})
+}
+func (m *Repository)AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin_reservation_calendar.html", &models.TemplateData{})
 }

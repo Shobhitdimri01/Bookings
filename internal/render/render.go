@@ -8,18 +8,26 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/Shobhitdimri01/Bookings/internal/config"
 	"github.com/Shobhitdimri01/Bookings/internal/models"
 	"github.com/justinas/nosurf"
 )
 
-var functions = template.FuncMap{}
+var functions = template.FuncMap{
+	"humanDate":  HumanDate,
+}
 var pathtoTemplates = "./templates"
 var app *config.AppConfig
 
 func NewRenderer(a *config.AppConfig) {
 	app = a
+}
+
+
+func HumanDate(t time.Time) string {
+	return t.Format("02-01-2006")
 }
 
 var LoggedIn bool

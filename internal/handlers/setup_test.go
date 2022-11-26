@@ -57,7 +57,6 @@ func TestMain(m *testing.M){
 
 	repo := NewTestRepo(&app)
 	NewHandlers(repo)
-
 	render.NewRenderer(&app)
 	os.Exit(m.Run())
 }
