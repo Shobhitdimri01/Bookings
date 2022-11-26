@@ -29,22 +29,24 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Playfair Display";
   letter-spacing: 5px;
 }
+.navbar-toggler{
+    color:black;
+    }
 </style>
-<nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;">
-    <a class="navbar-brand" href="/"><strong>HOTEL</strong></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand mb-01 h1" href="/">
+            <img src="/static/images/logo (1).png" alt="Bootstrap" width="30" height="24"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" href="/about">About</a>
             </li>
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown active">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Rooms
@@ -54,14 +56,14 @@ h1, h2, h3, h4, h5, h6 {
                     <a class="dropdown-item" href="/suite-rooms">Sunset Premium Suite</a>
                 </div>
             </li>
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="/search-availability">Book Now</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="/contact">Contact</a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item active">
                 {{if eq .IsAuthenticated 1}}
 
                     <li class="nav-item dropdown">
