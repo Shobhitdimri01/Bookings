@@ -535,5 +535,5 @@ func (m *Repository)AdminAllReservations(w http.ResponseWriter, r *http.Request)
 	})
 }
 func (m *Repository)AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin_reservation_calendar.html", &models.TemplateData{})
+	render.Template(w, r, "test.html", &models.TemplateData{})
 }

@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+
+* {
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.mytitle {
+  text-align: center;
+  margin-bottom: 100px;
+  font-weight: 600;
+  position: relative;
+}
+
+section .row {
+  padding: 0px 80px 80px;
+}
+
+.mytitle::after {
+  content: "";
+  background: #9f9f18;
+  width: 250px;
+  height: 5px;
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 30px;
+  margin-bottom: 1px;
+  /* padding: 0px 80px; */
+}
+
+.service {
+  text-align: center;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  background: transparent;
+  transition: transform 0.5s;
+}
+
+.service i {
+  font-size: 40px;
+  margin-bottom: 10px;
+  color: #223505;
+}
+
+.service h2 {
+  font-weight: 600;
+  /* margin-bottom: 10px; */
+}
+
+.service:hover {
+  background: #b5d5b4;
+  color: rgb(29, 30, 29);
+  transform: scale(1.05);
+}
+
+.service:hover i {
+  color: rgb(9, 65, 72);
+}
+/* .img-fluid {
+  max-width: 100%;
+  height: auto;
+  width: 100%;
+} */
+
+/* @media (min-width: 576px) {
+  .img-fluid {
+    max-width: 540px;
+  }
+}
+@media (min-width: 768px) {
+  .img-fluid {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .img-fluid {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1200px) {
+  .img-fluid {
+    max-width: 1140px;
+  }
+} */

@@ -31,10 +31,10 @@
   /* Buttons with icon and text */
   &.btn-icon-text {
     .btn-icon-prepend {
-      margin-right: .5rem;
+      margin-right: 0.5rem;
     }
     .btn-icon-append {
-      margin-left: .5rem;
+      margin-left: 0.5rem;
     }
   }
   &.btn-social-icon {
@@ -54,7 +54,7 @@
 
 .btn-toolbar {
   .btn-group {
-    +.btn-group {
+    + .btn-group {
       @extend .ms-2;
     }
   }
@@ -77,5 +77,5 @@
 
 .btn-outline-light {
   color: #6c7383;
-  border-color: #e3e3e3;
+  border-color: #bc9329;
 }

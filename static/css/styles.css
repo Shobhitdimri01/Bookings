@@ -1,10 +1,19 @@
-.my-footer {
+/* .my-footer {
   height: 5em;
   background-color: #163b65;
   margin-top: 1.5em;
   padding: 1em;
   color: white;
   font-size: 80%;
+} */
+
+.blockquote-footer {
+  display: block;
+  font-size: 80%;
+  color: #6c757d;
+}
+.blockquote-footer::before {
+  content: "\2014 \00A0";
 }
 
 .notie-container {
@@ -19,7 +28,7 @@
   color: red;
 }
 .btn {
-  margin-right: 0.5rem !important;
+  margin-right: 1.5rem !important;
 }
 
 .btn {
@@ -65,4 +74,192 @@
 
 .Deluxe-room {
   max-width: 50%;
+}
+
+.ftco-section .ftco-sub-title {
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5em;
+  color: #d4d4d4;
+  font-family: "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
+  font-weight: 300;
+}
+
+.ftco-section .ftco-primary-title {
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.media-custom {
+  background: #fff;
+}
+.media-custom .media-body .name {
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 0;
+  color: #8d703b;
+}
+.media-custom .media-body .position {
+  font-size: 13px;
+  color: #d9d9d9;
+}
+
+.about-author .desc h3 {
+  font-size: 24px;
+}
+
+.ftco-section {
+  padding: 6em 0;
+  position: relative;
+}
+@media (max-width: 767.98px) {
+  .ftco-section {
+    padding: 6em 0;
+  }
+}
+@media (min-width: 768px) {
+  .ftco-section .container-fluid {
+    padding: 0 4em;
+  }
+}
+
+.ftco-bg-dark {
+  background: #3c312e;
+}
+
+.ftco-footer {
+  font-size: 16px;
+  padding: 1em 0;
+  background: #353839;
+  margin-top: 50px;
+  height: fit-content;
+}
+.ftco-footer .ftco-footer-logo {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.ftco-footer .ftco-footer-widget h2 {
+  font-weight: normal;
+  color: rgba(253, 255, 206, 0.992);
+  margin-bottom: 40px;
+  font-size: 18px;
+  font-weight: 400;
+}
+.ftco-footer .ftco-footer-widget ul li a span {
+  color: rgb(255, 255, 255);
+}
+
+.ftco-footer .ftco-footer-widget ul li span {
+  color: rgb(255, 255, 255);
+}
+.ftco-footer .ftco-footer-widget .btn-primary {
+  background: #fff !important;
+  border: 2px solid #fff !important;
+}
+.ftco-footer .ftco-footer-widget .btn-primary:hover {
+  background: #fff;
+  border: 2px solid #fff !important;
+}
+.ftco-footer p {
+  color: #fff;
+}
+.ftco-footer a {
+  color: rgba(255, 255, 255, 0.7);
+}
+.ftco-footer a:hover {
+  color: #fff;
+}
+.ftco-footer .ftco-heading-2 {
+  font-size: 17px;
+  font-weight: 400;
+  color: #000000;
+}
+
+.ftco-footer-social li {
+  list-style: none;
+  margin: 0 10px 0 0;
+  display: inline-block;
+}
+.ftco-footer-social li a {
+  height: 50px;
+  width: 50px;
+  display: block;
+  float: left;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  position: relative;
+}
+.ftco-footer-social li a span {
+  position: absolute;
+  font-size: 26px;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.ftco-footer-social li a:hover {
+  color: #fff;
+}
+
+.footer-small-nav > li {
+  display: inline-block;
+}
+.footer-small-nav > li a {
+  margin: 0 10px 10px 0;
+}
+.footer-small-nav > li a:hover,
+.footer-small-nav > li a:focus {
+  color: #8d703b;
+}
+
+.media .ftco-icon {
+  width: 100px;
+}
+.media .ftco-icon span {
+  color: #8d703b;
+}
+
+.ftco-media {
+  background: #fff;
+  border-radius: 0px;
+}
+.ftco-media .heading {
+  font-weight: normal;
+}
+.ftco-media.ftco-media-shadow {
+  padding: 40px;
+  background: #fff;
+  -webkit-box-shadow: 0 10px 50px -15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 50px -15px rgba(0, 0, 0, 0.3);
+  -webkit-transition: 0.2s all ease;
+  -o-transition: 0.2s all ease;
+  transition: 0.2s all ease;
+  position: relative;
+  top: 0;
+}
+.ftco-media.ftco-media-shadow:hover,
+.ftco-media.ftco-media-shadow:focus {
+  top: -3px;
+  -webkit-box-shadow: 0 10px 70px -15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 70px -15px rgba(0, 0, 0, 0.3);
+}
+.ftco-media .icon {
+  font-size: 50px;
+  display: block;
+  color: #8d703b;
+}
+.ftco-media.text-center .ftco-icon {
+  margin: 0 auto;
+}
+
+.ftco-overflow-hidden {
+  overflow: hidden;
+}
+
+.padding-top-bottom {
+  padding-top: 100px;
+  padding-bottom: 120px;
 }

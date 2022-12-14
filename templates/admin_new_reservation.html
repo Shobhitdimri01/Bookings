@@ -1,4 +1,33 @@
 {{template "admin" .}} {{define "page-title"}} New Reservation {{end}} {{define
 "content"}}
 <div class="col-md-12">New Reservation</div>
-{{end}}
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
+
+<body>
+  <p>This page was viewed</p>
+  <h1 id="count">0</h1>
+    <script>
+      const countEl = document.getElementById("count");
+      countvisits();
+
+      function countvisits() {
+        fetch(
+          "https://api.countapi.xyz/update/booking/booking.website/?amount=1"
+        )
+          .then((res) => res.json())
+          .then((res) => {
+            countEl.innerHTML = res.value;
+            liveCounts = res.value;
+            console.log("hello", liveCounts);
+          });
+      };
+      console.log(a);
+    </script>
+    {{end}}
+  </p>
+</body>

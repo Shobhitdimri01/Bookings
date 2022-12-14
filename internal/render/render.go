@@ -18,7 +18,9 @@ import (
 var functions = template.FuncMap{
 	"humanDate":  HumanDate,
 }
-var pathtoTemplates = "./templates"
+ var pathtoTemplates = "./templates"
+//  var pathtoTemplates = "./Deluxe"
+
 var app *config.AppConfig
 
 func NewRenderer(a *config.AppConfig) {
@@ -41,7 +43,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 		td.IsAuthenticated = 1
 		LoggedIn = true		
 	}
-	app.InfoLog.Println("LoggedIn", LoggedIn)
+	// app.InfoLog.Println("LoggedIn", LoggedIn)
 	return td
 }
 
