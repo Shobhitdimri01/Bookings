@@ -70,8 +70,8 @@ section .row {
   height: auto;
   width: 100%;
 } */
-
-/* @media (min-width: 576px) {
+/*
+ @media (min-width: 576px) {
   .img-fluid {
     max-width: 540px;
   }

@@ -1,53 +1,70 @@
+{{template "base" .}} {{define "content"}}
 
-{{template "base" .}}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1 class="mt-5 bg-info text-white">Booking Details</h1>
 
+      <hr />
 
-{{define "content"}}
-
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1 class="mt-5 bg-info text-white">Booking Details</h1>
-
-                <hr>
-
-                <table class="table table-striped">
-                    <thead></thead>
-                    {{$info := index .Data "reservation"}}
-                    <tbody>
-                        <p style="color:rgba(4, 177, 18, 0.999)"><strong><b><u>Reservation Detail : </u></b><br>
-                            Room : {{$info.Room.RoomName}}<br>
-                            Arrival   : {{index .StringMap "start_date"}}<br>
-                            Departure  :{{index .StringMap "end_date"}}
-                        </strong> </p>
-                        <tr class="table-success">
-                            <td>Name:</td>
-                            <td>{{$info.FirstName}} {{$info.LastName}}</td>
-                        </tr>
-                        <tr class="table-warning">
-                            <td>Room:</td>
-                            <td>{{$info.Room.RoomName}}</td>
-                        </tr>
-                        <tr class="table-success">
-                            <td>Arrival:</td>
-                            <td>{{index .StringMap "start_date"}}</td>
-                        </tr>
-                        <tr class="table-warning">
-                            <td>Departure:</td>
-                            <td>{{index .StringMap "end_date"}}</td>
-                        </tr>
-                        <tr class="table-success">
-                            <td>Email:</td>
-                            <td>{{$info.Email}}</td>
-                        </tr>
-                        <tr class="table-warning">
-                            <td>Phone:</td>
-                            <td>{{$info.Phone}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-            </div>
-        </div>
+      <table class="table table-striped">
+        <thead></thead>
+        {{$info := index .Data "reservation"}}
+        <tbody>
+          <p style="color: rgba(4, 177, 18, 0.999)">
+            <strong
+              ><b><u>Reservation Detail : </u></b><br />
+              Room : {{$info.Room.RoomName}}<br />
+              Arrival : {{index .StringMap "start_date"}}<br />
+              Departure :{{index .StringMap "end_date"}}
+            </strong>
+          </p>
+          <tr class="table-success">
+            <td>Name:</td>
+            <td>{{$info.FirstName}} {{$info.LastName}}</td>
+          </tr>
+          <tr class="table-warning">
+            <td>Room:</td>
+            <td>{{$info.Room.RoomName}}</td>
+          </tr>
+          <tr class="table-success">
+            <td>Arrival:</td>
+            <td>{{index .StringMap "start_date"}}</td>
+          </tr>
+          <tr class="table-warning">
+            <td>Departure:</td>
+            <td>{{index .StringMap "end_date"}}</td>
+          </tr>
+          <tr class="table-success">
+            <td>Email:</td>
+            <td>{{$info.Email}}</td>
+          </tr>
+          <tr class="table-warning">
+            <td>Phone:</td>
+            <td>{{$info.Phone}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+      <div>
+        <a
+          style="
+            width: 200px;
+            background-color: #1ca953;
+            text-align: center;
+            font-weight: 800;
+            padding: 11px 0px;
+            color: white;
+            font-size: 12px;
+            display: inline-block;
+            text-decoration: none;
+          "
+          href="https://pmny.in/6I3MBrc6YoSR"
+        >
+          Book Now
+        </a>
+      </div>
     </div>
+  </div>
+</div>
 {{end}}
