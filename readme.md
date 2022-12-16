@@ -14,7 +14,7 @@
 
 ### API
 
-- Payment API [PayU] (https://www.payu.in/)
+- Payment API [PayU](https://www.payu.in/)
 
 ### 🤝 Connect with me:
 
