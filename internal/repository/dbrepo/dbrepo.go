@@ -7,13 +7,13 @@ import (
 	"github.com/Shobhitdimri01/Bookings/internal/repository"
 )
 
-//This struct and function give ease to connect to any database(MongoDb,MariaDb ...etc) eg:-->Here we are Connecting to Postgres
+// This struct and function give ease to connect to any database(MongoDb,MariaDb ...etc) eg:-->Here we are Connecting to Postgres
 type postgresDBRepo struct {
 	App *config.AppConfig
 	DB  *sql.DB
 }
 
-type testDbRepo struct{
+type testDbRepo struct {
 	App *config.AppConfig
 	DB  *sql.DB
 }

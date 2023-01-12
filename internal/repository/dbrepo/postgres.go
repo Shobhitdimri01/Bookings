@@ -69,7 +69,7 @@ func (m *postgresDBRepo) InsertRoomRestriction(r models.RoomRestriction) error {
 	return nil
 }
 
-//Will check the date and See whether there is availability in room for roomId --> returns True or false --> if no Availability
+// Will check the date and See whether there is availability in room for roomId --> returns True or false --> if no Availability
 func (m *postgresDBRepo) SearchAvailabilityByDatesByRoomID(start, end time.Time, roomID int) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -96,7 +96,7 @@ func (m *postgresDBRepo) SearchAvailabilityByDatesByRoomID(start, end time.Time,
 	return false, nil
 }
 
-//SearchAvailabilityforAll rooms returns a slice of available rooms if any , for given date range
+// SearchAvailabilityforAll rooms returns a slice of available rooms if any , for given date range
 func (m *postgresDBRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]models.Room, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -137,7 +137,7 @@ func (m *postgresDBRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]
 
 }
 
-//GetRoomByID will get room name with its defined Id
+// GetRoomByID will get room name with its defined Id
 func (m *postgresDBRepo) GetRoomByID(id int) (models.Room, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -163,16 +163,15 @@ func (m *postgresDBRepo) GetRoomByID(id int) (models.Room, error) {
 
 }
 
-
-//Get User function returns a user by id.
-func (m *postgresDBRepo) GetUserById(id int)(models.User,error){
+// Get User function returns a user by id.
+func (m *postgresDBRepo) GetUserById(id int) (models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `select id ,first_name,last_name,email,password,access_level,created_at,updated_at
 	from users where id = $1`
-	
-	row := m.DB.QueryRowContext(ctx,query,id)
+
+	row := m.DB.QueryRowContext(ctx, query, id)
 
 	var u models.User
 
@@ -187,24 +186,22 @@ func (m *postgresDBRepo) GetUserById(id int)(models.User,error){
 		&u.UpdatedAt,
 	)
 
-	if err != nil{
-		return u,err
+	if err != nil {
+		return u, err
 	}
 
-	return u,nil
-
+	return u, nil
 
 }
 
-
-//Update User updates the user in the database
-func (m *postgresDBRepo)UpdateUser(u models.User) error{
+// Update User updates the user in the database
+func (m *postgresDBRepo) UpdateUser(u models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `update users set first_name=$1, last_name=$2, email=$3,access_level = $4, updated_at = $5`
 
-	_, err := m.DB.ExecContext(ctx,query,
+	_, err := m.DB.ExecContext(ctx, query,
 		u.FirstName,
 		u.LastName,
 		u.Email,
@@ -212,7 +209,7 @@ func (m *postgresDBRepo)UpdateUser(u models.User) error{
 		time.Now(),
 	)
 
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
@@ -222,7 +219,7 @@ func (m *postgresDBRepo)UpdateUser(u models.User) error{
 //Hash in the database should correspond to the password by user.
 //Authenticate will authemticate the user by matching user data with database
 
-func (m *postgresDBRepo) Authenticate(email, testPassword string)(int , string ,error){
+func (m *postgresDBRepo) Authenticate(email, testPassword string) (int, string, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -230,30 +227,84 @@ func (m *postgresDBRepo) Authenticate(email, testPassword string)(int , string ,
 	var id int
 	var hashedPassword string
 
-	row := m.DB.QueryRowContext(ctx,"select id,password from users where email = $1",email)
+	row := m.DB.QueryRowContext(ctx, "select id,password from users where email = $1", email)
 	err := row.Scan(
 		&id,
 		&hashedPassword,
 	)
-	if err!=nil{
-		return id , "",err
+	if err != nil {
+		return id, "", err
 	}
 
 	//Comparing user password with Database
 
-	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword),[]byte(testPassword))
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(testPassword))
 
-	if err == bcrypt.ErrMismatchedHashAndPassword{
-			return 0,"",errors.New("incorrect password")
-	}else if err != nil{
-		return 0,"",err
+	if err == bcrypt.ErrMismatchedHashAndPassword {
+		return 0, "", errors.New("incorrect password")
+	} else if err != nil {
+		return 0, "", err
 	}
 
-	return id,hashedPassword,nil
+	return id, hashedPassword, nil
 }
 
-//returns all reservation from database
-func (m *postgresDBRepo) AllReservations()([]models.Reservation,error){
+// returns all reservation from database
+func (m *postgresDBRepo) AllReservations() ([]models.Reservation, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var reservations []models.Reservation
+
+	query := `
+		select r.id, r.first_name, r.last_name, r.email, r.phone, r.start_date, 
+		r.end_date, r.room_id, r.created_at, r.updated_at,r.processed,
+		rm.id, rm.room_name
+		from reservations r
+		left join rooms rm on (r.room_id = rm.id)
+		order by r.start_date asc
+`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return reservations, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var i models.Reservation
+		err := rows.Scan(
+			&i.ID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Email,
+			&i.Phone,
+			&i.StartDate,
+			&i.EndDate,
+			&i.RoomID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Processed,
+			&i.Room.ID,
+			&i.Room.RoomName,
+		)
+
+		if err != nil {
+			return reservations, err
+		}
+		reservations = append(reservations, i)
+	}
+
+	if err = rows.Err(); err != nil {
+		return reservations, err
+	}
+
+	return reservations, nil
+
+}
+
+// returns AllNewreservation from database
+func (m *postgresDBRepo) AllNewReservations() ([]models.Reservation, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -265,6 +316,7 @@ func (m *postgresDBRepo) AllReservations()([]models.Reservation,error){
 		rm.id, rm.room_name
 		from reservations r
 		left join rooms rm on (r.room_id = rm.id)
+		where processed = 0
 		order by r.start_date asc
 `
 

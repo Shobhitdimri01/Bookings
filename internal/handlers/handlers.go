@@ -24,7 +24,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-//Repo is repository used by handlers
+// Repo is repository used by handlers
 var Repo *Repository
 
 // Repository is the repository type
@@ -41,7 +41,7 @@ func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	}
 }
 
-//Testing function for repository
+// Testing function for repository
 func NewTestRepo(a *config.AppConfig) *Repository {
 	return &Repository{
 		App: a,
@@ -49,13 +49,13 @@ func NewTestRepo(a *config.AppConfig) *Repository {
 	}
 }
 
-//New Handlers sets the repository for handler
+// New Handlers sets the repository for handler
 func NewHandlers(r *Repository) {
 	Repo = r
 }
 
 // Home is the handler for the home page
-//(m *Repository) is the reciever function due to which all of the function is linked with AppConfig
+// (m *Repository) is the reciever function due to which all of the function is linked with AppConfig
 // Home is the handler for the home page
 // Home is the handler for the home page
 // Home is the handler for the home page
@@ -114,7 +114,7 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-//Post Reservation handles the posting and validation of form
+// Post Reservation handles the posting and validation of form
 // PostReservation handles the posting of a reservation form
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
@@ -317,7 +317,7 @@ type jsonresponse struct {
 	EndDate   string `json:"end_date"`
 }
 
-//AvailabilityJson handles request for availability and sends JSON as response
+// AvailabilityJson handles request for availability and sends JSON as response
 func (m *Repository) AvailabilityJson(w http.ResponseWriter, r *http.Request) {
 	// need to parse request body
 	err := r.ParseForm()
@@ -377,7 +377,7 @@ func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "contact.html", &models.TemplateData{})
 }
 
-//Reservation summary displays the user reservation details
+// Reservation summary displays the user reservation details
 func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
 	//Pulling the data out from Session
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
@@ -403,7 +403,7 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 	})
 }
 
-//Choose room displays lists tha available room to the user
+// Choose room displays lists tha available room to the user
 func (m *Repository) ChooseRoom(w http.ResponseWriter, r *http.Request) {
 
 	roomID, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -423,7 +423,7 @@ func (m *Repository) ChooseRoom(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)
 }
 
-//Bookroom takes url parameter build sessional variable and takes user to make reservation screen
+// Bookroom takes url parameter build sessional variable and takes user to make reservation screen
 func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
 	//id , s , e
 	roomID, _ := strconv.Atoi(r.URL.Query().Get("id"))
@@ -463,7 +463,7 @@ func (m *Repository) ShowLogin(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-//Handles user login Authentication
+// Handles user login Authentication
 func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	log.Println("Logging Working ...")
 	//Renew Token prevent session fixation attack
@@ -500,7 +500,7 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-//Destroys session
+// Destroys session
 func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	_ = m.App.Session.Destroy(r.Context())
 	_ = m.App.Session.RenewToken(r.Context())
@@ -510,17 +510,27 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
-
 //Admin Functionality
 
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
-		render.Template(w, r, "admin.html", &models.TemplateData{})
+	render.Template(w, r, "admin.html", &models.TemplateData{})
 }
 
-func (m *Repository) AdminNewReservations (w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin_new_reservation.html", &models.TemplateData{})
+// Shows all new reservation at Admin Page
+func (m *Repository) AdminNewReservations(w http.ResponseWriter, r *http.Request) {
+	reservations, err := m.DB.AllNewReservations()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+
+	render.Template(w, r, "admin_all_reservation.html", &models.TemplateData{
+		Data: data,
+	})
 }
-func (m *Repository)AdminAllReservations(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) AdminAllReservations(w http.ResponseWriter, r *http.Request) {
 	reservations, err := m.DB.AllReservations()
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -534,6 +544,6 @@ func (m *Repository)AdminAllReservations(w http.ResponseWriter, r *http.Request)
 		Data: data,
 	})
 }
-func (m *Repository)AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "test.html", &models.TemplateData{})
+func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin_reservation_calender.html", &models.TemplateData{})
 }
