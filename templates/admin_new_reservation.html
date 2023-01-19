@@ -12,7 +12,7 @@
     <div class="col-md-12">
         {{$res := index .Data "reservations"}}
 
-        <table class="table table-dark table-bordered table-hover" id="new-res">
+        <table class="table table-dark" id = "new-res">
             <thead>
             <tr>
                 <th>ID</th>
@@ -27,7 +27,7 @@
                 <tr>
                     <td>{{.ID}}</td>
                     <td>
-                        <a href="/admin/reservations/new/{{.ID}}/show">
+                        <a href="/admin/reservations/new/{{.ID}}">
                             {{.LastName}}
                         </a>
                     </td>
