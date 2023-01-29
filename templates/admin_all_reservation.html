@@ -1,52 +1,54 @@
-<title>All Reservations</title>
-{{template "admin" .}} {{define "css"}}
-<link
-  href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css"
-  rel="stylesheet"
-  type="text/css"
-/>
-{{end}} {{define "page-title"}}ALL Reservation {{end}} {{define "content"}}
-<div class="col-md-12">
-  {{$res := index .Data "reservations"}}
-  <div class="table-responsive">
-  <table class="table table-dark table-bordered table-hover">
-    <thead>
-    <tr class="active-row ">
-        <th scope="col" >ID</th>
-        <th scope="col">Guest Name</th>
-        <th scope="col">Room</th>
-        <th scope="col">Arrival</th>
-        <th scope="col">Departure</th>
-    </tr>
-    </thead>
-    <tbody>
-       {{range $res}}  
-       <tr class="table-success">
-        <td>{{.ID}}</td>
-        <td>
-          <a class="link-dark" href="/admin/reservations/all/{{.ID}}" id="all-res">
-              {{.FirstName}} {{.LastName}}
-          </a>
-      </td>
-       <td>{{.Room.RoomName}}</td>
-       <td>{{humanDate .StartDate}}</td>
-       <td>{{humanDate .EndDate}}</td>
-</tr>
-  {{end}}
-  </tbody>
-</div>
-</div>
-{{end}} {{define "js"}}
-<script
-  src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"
-  type="text/javascript"
-></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const dataTable = new simpleDatatables.DataTable("#all-res", {
-      select: 3,
-      sort: "desc",
-    });
-  });
-</script>
+{{template "admin" .}}
+
+{{define "css"}}
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+{{end}}
+
+{{define "page-title"}}
+    All Reservations
+{{end}}
+
+{{define "content"}}
+    <div class="col-md-12">
+        {{$res := index .Data "reservations"}}
+        <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover">
+          <thead>
+          <tr class="active-row ">
+              <th scope="col" >ID</th>
+              <th scope="col">Guest Name</th>
+              <th scope="col">Room</th>
+              <th scope="col">Arrival</th>
+              <th scope="col">Departure</th>
+          </tr>
+          </thead>
+          <tbody>
+            {{range $res}}
+            <tr class="table-success">
+                    <td>{{.ID}}</td>
+                    <td>
+                        <a class="link-info" href="/admin/reservations/all/{{.ID}}">
+                            {{.FirstName}} {{.LastName}}
+                        </a>
+                    </td>
+                    <td>{{.Room.RoomName}}</td>
+                    <td>{{humanDate .StartDate}}</td>
+                    <td>{{humanDate .EndDate}}</td>
+                </tr>
+            {{end}}
+            </tbody>
+        </table>
+        </div>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const dataTable = new simpleDatatables.DataTable("#all-res", {
+                select: 3, sort: "desc",
+            })
+        })
+    </script>
 {{end}}

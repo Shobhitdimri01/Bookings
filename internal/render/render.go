@@ -19,7 +19,7 @@ var functions = template.FuncMap{
 	"humanDate":  HumanDate,
 }
  var pathtoTemplates = "./templates"
-//  var pathtoTemplates = "./Deluxe"
+
 
 var app *config.AppConfig
 
