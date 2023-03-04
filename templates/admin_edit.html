@@ -1,0 +1,58 @@
+{{template "admin" .}}
+
+{{define "page-title"}}
+    Edit Admin Page
+{{end}}
+{{define "content"}}
+    {{$res := index .Data "users"}}
+    <!-- -->
+    <form action="/admin/update/admin-data/{{$res.ID}}" method="post"  novalidate>
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        <div class="form-group mt-3">
+            <label for="first_name">First Name:</label>
+            {{with .Form.Errors.Get "first_name"}}
+                <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input class="form-control {{with .Form.Errors.Get "first_name"}} is-invalid {{end}}"
+                   id="first_name" autocomplete="off" type='text'
+                   name='first_name' value="{{$res.FirstName}}" required>
+        </div>
+        <div class="form-group">
+            <label for="last_name">Last Name:</label>
+            {{with .Form.Errors.Get "last_name"}}
+                <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input class="form-control {{with .Form.Errors.Get "last_name"}} is-invalid {{end}}"
+                   id="last_name" autocomplete="off" type='text'
+                   name='last_name' value="{{$res.LastName}}" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            {{with .Form.Errors.Get "email"}}
+                <label class="text-danger">{{.}}</label>
+            {{end}}
+            <input class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}" id="email"
+                   autocomplete="off" type='email'
+                   name='email' value="{{$res.Email}}" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Access Level:</label>
+            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="access" >
+                <option selected selected disabled hidden>Select Admin Level</option>
+                <option value="1">Employee</option>
+                <option value="2">Admin</option>
+                <option value="3">Super Admin</option>
+              </select>
+        </div>
+        <hr>
+        <div class="float-left">
+            <input type="submit" class="btn btn-primary" value="Save">
+            <a href="/admin/data" class="btn btn-warning">Cancel</a>
+            </div>
+        <div class="float-sm-end">
+                <a href="/admin/delete-admin/modify/{{$res.ID}}" class="btn btn-danger">Delete</a>
+        </div>
+        <div class="clearfix"></div>
+
+    </form>
+{{end}}

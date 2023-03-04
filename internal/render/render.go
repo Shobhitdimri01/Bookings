@@ -16,10 +16,9 @@ import (
 )
 
 var functions = template.FuncMap{
-	"humanDate":  HumanDate,
+	"humanDate": HumanDate,
 }
- var pathtoTemplates = "./templates"
-
+var pathtoTemplates = "./templates"
 
 var app *config.AppConfig
 
@@ -27,27 +26,29 @@ func NewRenderer(a *config.AppConfig) {
 	app = a
 }
 
-
 func HumanDate(t time.Time) string {
 	return t.Format("02-01-2006")
 }
 
 var LoggedIn bool
+var Level int
 
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 	td.Flash = app.Session.PopString(r.Context(), "flash")
 	td.Warning = app.Session.PopString(r.Context(), "warning")
 	td.Error = app.Session.PopString(r.Context(), "error")
 	td.CSRFToken = nosurf.Token(r)
+	td.Level = Level
+	fmt.Println("My access Level is : ", td.Level)
 	if app.Session.Exists(r.Context(), "user_id") {
 		td.IsAuthenticated = 1
-		LoggedIn = true		
+		LoggedIn = true
 	}
 	// app.InfoLog.Println("LoggedIn", LoggedIn)
 	return td
 }
 
-//td is template data
+// td is template data
 // Template renders a template
 func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
 	var tc map[string]*template.Template

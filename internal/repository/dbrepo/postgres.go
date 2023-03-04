@@ -3,6 +3,7 @@ package dbrepo
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/Shobhitdimri01/Bookings/internal/models"
@@ -216,24 +217,52 @@ func (m *postgresDBRepo) UpdateUser(u models.User) error {
 	return nil
 }
 
+// Compare Email
+func (m *postgresDBRepo) EmailCheck(email string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	//Appending an array from database
+	query := `SELECT  email FROM public.users;`
+	results := make([]string, 0)
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		panic(err)
+	}
+	var scanString string
+	for rows.Next() {
+		rows.Scan(&scanString)
+		results = append(results, scanString)
+	}
+	m.App.InfoLog.Println("results : ", results)
+	for i := 0; i < len(results); i++ {
+		if email == results[i] {
+			return true
+		}
+	}
+	return false
+
+}
+
 //Hash in the database should correspond to the password by user.
 //Authenticate will authemticate the user by matching user data with database
 
-func (m *postgresDBRepo) Authenticate(email, testPassword string) (int, string, error) {
+func (m *postgresDBRepo) Authenticate(email, testPassword string) (int, string, int, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	var id int
 	var hashedPassword string
+	var accesslevel int
 
-	row := m.DB.QueryRowContext(ctx, "select id,password from users where email = $1", email)
+	row := m.DB.QueryRowContext(ctx, "select id,password,access_level from users where email = $1", email)
 	err := row.Scan(
 		&id,
 		&hashedPassword,
+		&accesslevel,
 	)
 	if err != nil {
-		return id, "", err
+		return id, "", 0, err
 	}
 
 	//Comparing user password with Database
@@ -241,12 +270,12 @@ func (m *postgresDBRepo) Authenticate(email, testPassword string) (int, string, 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(testPassword))
 
 	if err == bcrypt.ErrMismatchedHashAndPassword {
-		return 0, "", errors.New("incorrect password")
+		return 0, "", 0, errors.New("incorrect password")
 	} else if err != nil {
-		return 0, "", err
+		return 0, "", 0, err
 	}
 
-	return id, hashedPassword, nil
+	return id, hashedPassword, accesslevel, nil
 }
 
 // returns all reservation from database
@@ -356,6 +385,89 @@ func (m *postgresDBRepo) AllNewReservations() ([]models.Reservation, error) {
 	return reservations, nil
 
 }
+func (m *postgresDBRepo) GetAdminByID(id int) (models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	var admin models.User
+	query := `SELECT id, first_name, last_name, email, access_level FROM public.users WHERE id=$1;`
+	rows := m.DB.QueryRowContext(ctx, query, id)
+	err := rows.Scan(
+		&admin.ID,
+		&admin.FirstName,
+		&admin.LastName,
+		&admin.Email,
+		&admin.AccessLevel,
+	)
+	if err != nil {
+		return admin, err
+	}
+	fmt.Println("All-Data:", admin)
+	return admin, nil
+}
+func (m *postgresDBRepo) UpdateAdminData(u models.User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	fmt.Println("Hellooooooooooooooooooooooo", u.ID)
+	query := `UPDATE public.users
+	SET first_name=$1, last_name=$2, email=$3, access_level=$4 WHERE id=$5;`
+	_, err := m.DB.ExecContext(ctx, query,
+		u.FirstName,
+		u.LastName,
+		u.Email,
+		u.AccessLevel,
+		u.ID,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *postgresDBRepo) DeleteAdminByID(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `DELETE FROM public.users WHERE id=$1;`
+	_, err := m.DB.ExecContext(ctx, query, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (m *postgresDBRepo) GetAllAdmins() ([]models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	var admin []models.User
+	query := `SELECT u.id, u.first_name, u.last_name, u.email, u.access_level  
+	FROM public.users u;`
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return admin, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var i models.User
+		err := rows.Scan(
+			&i.ID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Email,
+			&i.AccessLevel,
+		)
+		if err != nil {
+			return admin, err
+		}
+		fmt.Println(i)
+		admin = append(admin, i)
+	}
+	if err = rows.Err(); err != nil {
+		return admin, err
+	}
+
+	return admin, nil
+
+}
 
 func (m *postgresDBRepo) GetReservationByID(id int) (models.Reservation, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -446,5 +558,88 @@ func (m *postgresDBRepo) UpdateProcessedForReservation(id, processed int) error 
 		return err
 	}
 
+	return nil
+}
+
+//Counting total IDs from database
+
+func (m *postgresDBRepo) CountReservation() (total_res, del_res, sun_res int) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `select count(id) from reservations;`
+	query1 := `select count(id) from reservations where room_id = 1;`
+	query2 := `select count(id) from reservations where room_id = 2;`
+	row := m.DB.QueryRowContext(ctx, query)
+	row1 := m.DB.QueryRowContext(ctx, query1)
+	row2 := m.DB.QueryRowContext(ctx, query2)
+	err := row.Scan(&total_res)
+	res2 := row1.Scan(&del_res)
+	res3 := row2.Scan(&sun_res)
+	if err != nil || res2 != nil || res3 != nil {
+		fmt.Print(err)
+	}
+	return total_res, del_res, sun_res
+}
+
+func (m *postgresDBRepo) CountMonths() {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT EXTRACT('MONTH' FROM start_date) AS month,
+	COUNT(id) AS data
+	FROM reservations 
+	GROUP BY EXTRACT('MONTH' FROM start_date);`
+	rows, _ := m.DB.QueryContext(ctx, query)
+	cols, _ := rows.Columns()
+	m.App.InfoLog.Println(len(cols))
+	data := make(map[string]string)
+
+	if rows.Next() {
+		columns := make([]string, len(cols))
+		columnPointers := make([]interface{}, len(cols))
+		for i, _ := range columns {
+			columnPointers[i] = &columns[i]
+			m.App.InfoLog.Println(columnPointers[i])
+		}
+
+		rows.Scan(columnPointers...)
+
+		for i, colName := range cols {
+			data[colName] = columns[i]
+		}
+	}
+	for i, n := range data {
+		m.App.InfoLog.Println(i, n)
+	}
+	m.App.InfoLog.Println(data)
+	// fmt.Print(row.Scan(&data))
+	// m.App.InfoLog.Println(data)
+	// err := row.Scan(&data)
+	// var data [12]int
+	// for _,i := range row{
+	// 	row.Scan(&data[i])
+	// }
+}
+func (m *postgresDBRepo) InsertUserData(r models.User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `INSERT INTO public.users
+	(first_name, last_name, email, "password", access_level, created_at, updated_at)
+	VALUES($1,$2,$3,$4,$5,$6,$7);`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		r.FirstName,
+		r.LastName,
+		r.Email,
+		r.Password,
+		r.AccessLevel,
+		time.Now(),
+		time.Now(),
+	)
+
+	if err != nil {
+		return err
+
+	}
 	return nil
 }

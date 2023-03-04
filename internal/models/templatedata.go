@@ -15,4 +15,5 @@ type TemplateData struct{
 	Error                string
 	Form				*forms.Form
 	IsAuthenticated		int
+	Level				int
 }

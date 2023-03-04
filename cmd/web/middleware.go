@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 
-	// "github.com/Shobhitdimri01/Bookings/internal/helpers"
 	"github.com/Shobhitdimri01/Bookings/internal/render"
 	"github.com/justinas/nosurf"
 )

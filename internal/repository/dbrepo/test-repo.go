@@ -115,8 +115,8 @@ func (m *testDbRepo) UpdateUser(u models.User) error {
 	return nil
 }
 
-func (m *testDbRepo) Authenticate(email, testPassword string) (int, string, error) {
-	return 1, "", nil
+func (m *testDbRepo) Authenticate(email, testPassword string) (int, string,int, error) {
+	return 1, "",1, nil
 }
 func (m *testDbRepo) AllReservations() ([]models.Reservation, error) {
 	var reservations []models.Reservation
@@ -139,5 +139,29 @@ func (m *testDbRepo)DeleteReservation(id int)error{
 	return nil
 }
 func (m *testDbRepo)UpdateProcessedForReservation(id,processed int) error{
+	return nil
+}
+func (m *testDbRepo)CountReservation()(int,int,int){
+	return 1,1,1
+}
+func (m *testDbRepo)CountMonths(){
+}
+func (m *testDbRepo)InsertUserData(r models.User) error{
+	return nil
+}
+func(m *testDbRepo)EmailCheck(email string)bool{
+	return true
+}
+func (m *testDbRepo)GetAllAdmins()([]models.User,error){
+	return nil,nil
+}
+func (m *testDbRepo)GetAdminByID(id int)(models.User,error){
+	var admin models.User
+	return admin,nil
+}
+func (m *testDbRepo)DeleteAdminByID(id int)error{
+	return nil
+}
+func(m *testDbRepo)UpdateAdminData(u models.User)error{
 	return nil
 }

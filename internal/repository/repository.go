@@ -16,11 +16,19 @@ type DatabaseRepo interface {
 	GetRoomByID(id int) (models.Room, error)
 	GetUserById(id int) (models.User, error)
 	UpdateUser(u models.User) error
-	Authenticate(email, testPassword string) (int, string, error)
+	Authenticate(email, testPassword string) (int, string,int, error)
 	AllReservations() ([]models.Reservation, error)
 	AllNewReservations() ([]models.Reservation, error)
 	GetReservationByID(id int) (models.Reservation, error)
 	UpdateReservation(u models.Reservation) error
 	DeleteReservation(id int)error
 	UpdateProcessedForReservation(id,processed int) error
+	CountReservation()(int,int,int)
+	CountMonths()
+	InsertUserData(models.User) error
+	EmailCheck(email string)bool
+	GetAllAdmins()([]models.User,error)
+	GetAdminByID(id int)(models.User,error)
+	DeleteAdminByID(id int)error
+	UpdateAdminData(u models.User)error
 }

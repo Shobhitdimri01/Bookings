@@ -8,6 +8,12 @@ import (
 	"strings"
 
 	//"log"
+	// "io/ioutil"
+	"io"
+	"math/rand"
+	"os"
+
+	// "path/filepath"
 	"strconv"
 	"time"
 
@@ -23,6 +29,13 @@ import (
 	"github.com/Shobhitdimri01/Bookings/internal/repository"
 	"github.com/Shobhitdimri01/Bookings/internal/repository/dbrepo"
 	"github.com/go-chi/chi/v5"
+	"golang.org/x/crypto/bcrypt"
+
+	// "github.com/vicanso/go-charts/v2"
+	"github.com/go-echarts/examples/examples"
+	"github.com/go-echarts/go-echarts/v2/charts"
+	"github.com/go-echarts/go-echarts/v2/components"
+	"github.com/go-echarts/go-echarts/v2/opts"
 )
 
 // Repo is repository used by handlers
@@ -235,6 +248,141 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	m.App.Session.Put(r.Context(), "reservation", reservation)
 	m.App.Session.Put(r.Context(), "flash", "Email Sent!")
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
+
+}
+
+// encrypts the password before saving it to database
+func HashPassword(userPassword string) string {
+	password, err := bcrypt.GenerateFromPassword([]byte(userPassword), 14)
+	if err != nil {
+		log.Panic(err)
+	}
+	return string(password)
+}
+
+// Signing up new User
+func (m *Repository) AdminSignup(w http.ResponseWriter, r *http.Request) {
+	form := forms.New(r.PostForm)
+	form.Required("email", "password")
+	form.IsEmail("email")
+	accesslevel, _ := strconv.ParseInt(r.FormValue("access"), 10, 64)
+	details := models.User{
+		FirstName:   r.FormValue("first_name"),
+		Email:       r.FormValue("email"),
+		LastName:    r.FormValue("last_name"),
+		Password:    r.FormValue("password"),
+		AccessLevel: int(accesslevel),
+	}
+	fmt.Println("Access:-----------------------------", details.AccessLevel)
+	if !form.Valid() {
+		//TODO take user back to page
+		m.App.Session.Put(r.Context(), "error", "Invalid!")
+		render.Template(w, r, "admin_signup.html", &models.TemplateData{
+			Form: form,
+		})
+
+		return
+	}
+	password := HashPassword(details.Password)
+	details.Password = password
+
+	AlreadyExist := m.DB.EmailCheck(details.Email)
+	fmt.Println("status:", AlreadyExist)
+	if AlreadyExist {
+		m.App.Session.Put(r.Context(), "error", "User Exist")
+		http.Redirect(w, r, "/admin/user", http.StatusSeeOther)
+		return
+	}
+	err := m.DB.InsertUserData(details)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "Error")
+		fmt.Println(err)
+	}
+	m.App.InfoLog.Println(details)
+	m.App.Session.Put(r.Context(), "flash", "Signed up Successfully!")
+	http.Redirect(w, r, "/admin/dashboard", http.StatusSeeOther)
+
+}
+
+func (m *Repository) ShowAdmins(w http.ResponseWriter, r *http.Request) {
+	users, err := m.DB.GetAllAdmins()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["users"] = users
+
+	render.Template(w, r, "show_admin_user.html", &models.TemplateData{
+		Data: data,
+	})
+}
+func (m *Repository) ShowModifyAdminUsers(w http.ResponseWriter, r *http.Request) {
+	exploded := strings.Split(r.RequestURI, "/")
+	id, err := strconv.Atoi(exploded[4])
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	log.Println(id)
+	users, err := m.DB.GetAdminByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["users"] = users
+	log.Println(users)
+	render.Template(w, r, "admin_edit.html", &models.TemplateData{
+		Data: data,
+		Form: forms.New(nil),
+	})
+}
+func (m *Repository) AdminDeleteID(w http.ResponseWriter, r *http.Request) {
+	exploded := strings.Split(r.RequestURI, "/")
+	id, err := strconv.Atoi(exploded[4])
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	log.Println(id)
+	err = m.DB.DeleteAdminByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "Admin Deleted!!")
+	http.Redirect(w, r, "/admin/data", http.StatusSeeOther)
+}
+func (m *Repository) UpdateAdminInfo(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Redirect(w, r, "/admin/data", http.StatusSeeOther)
+		return
+	}
+	exploded := strings.Split(r.RequestURI, "/")
+	id, err := strconv.Atoi(exploded[4])
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	log.Println("------------------------",id)
+	accesslevel, _ := strconv.ParseInt(r.FormValue("access"), 10, 64)
+	fmt.Println("**************************************",accesslevel)
+	details := models.User{
+		FirstName: r.FormValue("first_name"),
+		LastName:  r.FormValue("last_name"),
+		Email:     r.FormValue("email"),
+		AccessLevel: int(accesslevel),
+		ID: id,
+	}
+	fmt.Println("showdata-------",details)
+	err = m.DB.UpdateAdminData(details)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	m.App.Session.Put(r.Context(), "flash", "Admin Data Updated")
+	http.Redirect(w, r, "/admin/data", http.StatusSeeOther)
 
 }
 
@@ -481,6 +629,7 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 
 	email := r.Form.Get("email")
 	password := r.Form.Get("password")
+	fmt.Println(password)
 	if !form.Valid() {
 		//TODO take user back to page
 		render.Template(w, r, "login.html", &models.TemplateData{
@@ -489,14 +638,15 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, _, err := m.DB.Authenticate(email, password)
+	id, _, accesslevel, err := m.DB.Authenticate(email, password)
 	if err != nil {
 		log.Println(err)
 		m.App.Session.Put(r.Context(), "error", "Invalid login credential")
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 		return
 	}
-
+	render.Level = accesslevel
+	fmt.Println("Access_level-------", render.Level)
 	m.App.Session.Put(r.Context(), "user_id", id)
 	m.App.Session.Put(r.Context(), "flash", "Logged in Successfully")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -512,10 +662,118 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
-//Admin Functionality
+// Admin Dashboard Functions
 
+var (
+	itemCntPie = 2
+	seasons    = []string{"Deluxe king Room", "Sunset Suite Room"}
+)
+
+func (m *Repository) CountRes() (int, int, int) {
+	total_reservation_count, del_res, sun_res := m.DB.CountReservation()
+	m.App.InfoLog.Println("count is :", total_reservation_count, "\nDeluxe King Room :", del_res, "\nSunset_Room : ", sun_res)
+	return total_reservation_count, del_res, sun_res
+}
+func generatePieItems() []opts.PieData {
+	_, b, c := Repo.CountRes()
+	num := [2]int{b, c}
+	items := make([]opts.PieData, 0)
+	for i := 0; i < itemCntPie; i++ {
+		items = append(items, opts.PieData{Name: seasons[i], Value: num[i]})
+	}
+	return items
+}
+func pieShowLabel() *charts.Pie {
+	pie := charts.NewPie()
+	pie.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{Title: "Reservation Count"}),
+	)
+
+	pie.AddSeries("pie", generatePieItems()).
+		SetSeriesOptions(charts.WithLabelOpts(
+			opts.Label{
+				Show:      true,
+				Formatter: "{b}: {c}",
+			}),
+		)
+	return pie
+}
+
+var (
+	itemCnt = 7
+	weeks   = []string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
+)
+
+func generateBarItems() []opts.BarData {
+	items := make([]opts.BarData, 0)
+	for i := 0; i < itemCnt; i++ {
+		items = append(items, opts.BarData{Value: rand.Intn(300)})
+	}
+	return items
+}
+func barBasic() *charts.Bar {
+	bar := charts.NewBar()
+	bar.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{Title: "basic bar example", Subtitle: "This is the subtitle."}),
+	)
+
+	bar.SetXAxis(weeks).
+		AddSeries("Category A", generateBarItems()).
+		AddSeries("Category B", generateBarItems())
+	return bar
+}
+
+func geoBase() *charts.Geo {
+	geo := charts.NewGeo()
+	geo.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{Title: "World Map"}),
+		charts.WithGeoComponentOpts(opts.GeoComponent{
+			Map:       "world",
+			ItemStyle: &opts.ItemStyle{Color: "#006666"},
+		}),
+	)
+
+	return geo
+}
+
+type PieExamples struct{}
+
+func (PieExamples) Examples() {
+	page := components.NewPage()
+	page.AddCharts(
+		pieShowLabel(),
+		barBasic(),
+		geoBase(),
+	)
+	f, err := os.Create("templates/pie.html")
+	if err != nil {
+		panic(err)
+	}
+	page.Render(io.MultiWriter(f))
+}
+func Users(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin_signup.html", &models.TemplateData{})
+}
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
+	examplers := []examples.Exampler{
+		PieExamples{},
+	}
+	for _, e := range examplers {
+		e.Examples()
+	}
+	fmt.Println("Access_level -------", render.Level)
 	render.Template(w, r, "admin.html", &models.TemplateData{})
+	// render.Template(w, r, "admin_signup.html", &models.TemplateData{})
+}
+
+func (m *Repository) MonthCount(w http.ResponseWriter, r *http.Request) {
+
+	m.DB.CountMonths()
+
+}
+
+func (m *Repository) ChartLoad(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "pie.html", &models.TemplateData{})
 }
 
 // Shows all new reservation at Admin Page
@@ -528,7 +786,7 @@ func (m *Repository) AdminNewReservations(w http.ResponseWriter, r *http.Request
 	data := make(map[string]interface{})
 	data["reservations"] = reservations
 
-	render.Template(w, r, "admin_all_reservation.html", &models.TemplateData{
+	render.Template(w, r, "admin_new_reservation.html", &models.TemplateData{
 		Data: data,
 	})
 }
@@ -636,7 +894,31 @@ func (m *Repository) AdminDeleteReservation(w http.ResponseWriter, r *http.Reque
 	m.App.Session.Put(r.Context(), "flash", "Reservation Deleted!!")
 	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
 }
+
 // Display Calendar to Admin
 func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin_reservation_calender.html", &models.TemplateData{})
+	now := time.Now()
+	if r.URL.Query().Get("y") != "" {
+		year, _ := strconv.Atoi(r.URL.Query().Get("y"))
+		month, _ := strconv.Atoi(r.URL.Query().Get("m"))
+		now = time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+	}
+	next := now.AddDate(0, 1, 0)
+	last := now.AddDate(0, -1, 0)
+	nextMonth := next.Format("01")
+	nextMonthYear := next.Format("2006")
+
+	lastMonth := last.Format("01")
+	lastMonthYear := last.Format("2006")
+	stringMap := make(map[string]string)
+	stringMap["next_month"] = nextMonth
+	stringMap["next_month_year"] = nextMonthYear
+	stringMap["last_month"] = lastMonth
+	stringMap["last_month_year"] = lastMonthYear
+
+	stringMap["this_month"] = now.Format("01")
+	stringMap["this_month_year"] = now.Format("2006")
+	render.Template(w, r, "admin_reservation_calender.html", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }
