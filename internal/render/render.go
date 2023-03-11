@@ -17,6 +17,9 @@ import (
 
 var functions = template.FuncMap{
 	"humanDate": HumanDate,
+	"formatDate":FormatDate,
+	"iterate":iterate,
+	"add":Add,
 }
 var pathtoTemplates = "./templates"
 
@@ -26,12 +29,29 @@ func NewRenderer(a *config.AppConfig) {
 	app = a
 }
 
+func Add(a,b int)int{
+	return a+b
+}
+//Iterates return slice of ints
+func iterate(count int)[]int{
+	var(
+		i int
+	    items []int
+	)
+	for i = 0; i < count; i++ {
+		items = append(items, i)
+	}
+	return items
+}
 func HumanDate(t time.Time) string {
 	return t.Format("02-01-2006")
 }
 
-var LoggedIn bool
-var Level int
+func FormatDate(t time.Time,f string)string{
+	return t.Format(f)
+}
+var( LoggedIn bool 
+	Level int)
 
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 	td.Flash = app.Session.PopString(r.Context(), "flash")
@@ -39,6 +59,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 	td.Error = app.Session.PopString(r.Context(), "error")
 	td.CSRFToken = nosurf.Token(r)
 	td.Level = Level
+	
 	fmt.Println("My access Level is : ", td.Level)
 	if app.Session.Exists(r.Context(), "user_id") {
 		td.IsAuthenticated = 1

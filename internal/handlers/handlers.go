@@ -10,7 +10,6 @@ import (
 	//"log"
 	// "io/ioutil"
 	"io"
-	"math/rand"
 	"os"
 
 	// "path/filepath"
@@ -30,12 +29,12 @@ import (
 	"github.com/Shobhitdimri01/Bookings/internal/repository/dbrepo"
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
-
-	// "github.com/vicanso/go-charts/v2"
+//Charts
 	"github.com/go-echarts/examples/examples"
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/components"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	"github.com/go-echarts/go-echarts/v2/types"
 )
 
 // Repo is repository used by handlers
@@ -422,6 +421,11 @@ func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+	if(startDate==endDate){
+		m.App.Session.Put(r.Context(), "warning", "Arrival & Departure Date Can't be Same")
+		http.Redirect(w, r, "/search-availability", http.StatusSeeOther)
+		return
+	}
 
 	rooms, err := m.DB.SearchAvailabilityForAllRooms(startDate, endDate)
 	if err != nil {
@@ -436,7 +440,8 @@ func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 		m.App.InfoLog.Println("ROOM:", i.ID, " - ", i.RoomName)
 
 	}
-	m.App.InfoLog.Println("---------------------------------------------------")
+	m.App.InfoLog.Println("room_length---------------------------------------------------",len(rooms))
+	
 	////////////////////////////////////////////////////////////////////////////////////
 	if len(rooms) == 0 {
 		m.App.InfoLog.Println("Sorry !!!     Rooms fully Booked")
@@ -639,6 +644,7 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id, _, accesslevel, err := m.DB.Authenticate(email, password)
+
 	if err != nil {
 		log.Println(err)
 		m.App.Session.Put(r.Context(), "error", "Invalid login credential")
@@ -646,10 +652,17 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.Level = accesslevel
+	// models.TemplateData.CurrentID := id
+	intMap := make(map[string]int)
+	intMap["active_id"] = id
 	fmt.Println("Access_level-------", render.Level)
 	m.App.Session.Put(r.Context(), "user_id", id)
 	m.App.Session.Put(r.Context(), "flash", "Logged in Successfully")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	// new added
+	render.Template(w, r, "home.html", &models.TemplateData{
+		IntMap: intMap,
+	})
+	// http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // Destroys session
@@ -698,30 +711,62 @@ func pieShowLabel() *charts.Pie {
 		)
 	return pie
 }
+//
+var CurrentMonth []string 
+var Data []int
+func (m *Repository) MonthCount(){
+	//to avoid duplicacy error in bar
+	CurrentMonth = nil
+	Data = nil
+	Months := map[int]string{
+     
+		1: "Jan",
+		2: "Feb",
+		3: "Mar",
+		4: "Apr",
+		5: "May",
+		6: "Jun",
+		7: "Jul",
+		8: "Aug",
+		9: "Sep",
+		10: "Oct",
+		11: "Nov",
+		12: "Dec",
+	}
 
-var (
-	itemCnt = 7
-	weeks   = []string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
-)
-
+	month,BookingCount := m.DB.CountMonths()
+	
+	for i,_ := range month{
+		CurrentMonth = append(CurrentMonth,Months[month[i]])
+		m.App.InfoLog.Println("Mapping",Months[month[i]])
+	}
+	for i,_ := range BookingCount{
+		Data = append(Data,BookingCount[i])
+		m.App.InfoLog.Println("Data",BookingCount[i])
+	}
+} 
 func generateBarItems() []opts.BarData {
 	items := make([]opts.BarData, 0)
-	for i := 0; i < itemCnt; i++ {
-		items = append(items, opts.BarData{Value: rand.Intn(300)})
+	for i := 0; i < len(CurrentMonth); i++ {
+		items = append(items, opts.BarData{Value: Data[i]})
 	}
 	return items
 }
-func barBasic() *charts.Bar {
+func barWithTheme(theme string) *charts.Bar {
+	year, _,_ := time.Now().Date()
 	bar := charts.NewBar()
 	bar.SetGlobalOptions(
-		charts.WithTitleOpts(opts.Title{Title: "basic bar example", Subtitle: "This is the subtitle."}),
+		charts.WithInitializationOpts(opts.Initialization{Theme: theme}),
+		charts.WithTitleOpts(opts.Title{Title: fmt.Sprintf("Room Count Month-Wise for Year - %d",year)}),
 	)
-
-	bar.SetXAxis(weeks).
-		AddSeries("Category A", generateBarItems()).
+	bar.SetXAxis(CurrentMonth).
 		AddSeries("Category B", generateBarItems())
 	return bar
 }
+func themeVintage() *charts.Bar {
+	return barWithTheme(types.ThemeVintage)
+}
+
 
 func geoBase() *charts.Geo {
 	geo := charts.NewGeo()
@@ -742,7 +787,7 @@ func (PieExamples) Examples() {
 	page := components.NewPage()
 	page.AddCharts(
 		pieShowLabel(),
-		barBasic(),
+		themeVintage(),
 		geoBase(),
 	)
 	f, err := os.Create("templates/pie.html")
@@ -755,6 +800,7 @@ func Users(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "admin_signup.html", &models.TemplateData{})
 }
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
+	m.MonthCount()
 	examplers := []examples.Exampler{
 		PieExamples{},
 	}
@@ -766,11 +812,6 @@ func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 	// render.Template(w, r, "admin_signup.html", &models.TemplateData{})
 }
 
-func (m *Repository) MonthCount(w http.ResponseWriter, r *http.Request) {
-
-	m.DB.CountMonths()
-
-}
 
 func (m *Repository) ChartLoad(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "pie.html", &models.TemplateData{})
@@ -817,8 +858,14 @@ func (m *Repository) AdminShowReservations(w http.ResponseWriter, r *http.Reques
 	}
 	log.Println(id)
 	src := exploded[3]
+	
 	stringMap := make(map[string]string)
 	stringMap["src"] = src
+	year := r.URL.Query().Get("y")
+	month := r.URL.Query().Get("m")
+
+	stringMap["month"] = month
+	stringMap["year"] = year
 	//get reservations from database....
 	res, err := m.DB.GetReservationByID(id)
 	if err != nil {
@@ -882,8 +929,14 @@ func (m *Repository) AdminProcessReservation(w http.ResponseWriter, r *http.Requ
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	src := chi.URLParam(r, "src")
 	_ = m.DB.UpdateProcessedForReservation(id, 1)
+	year := r.URL.Query().Get("y")
+	month := r.URL.Query().Get("m")
 	m.App.Session.Put(r.Context(), "flash", "Reservation marked as processed")
-	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
+	if year == "" {
+		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", year, month), http.StatusSeeOther)
+	}
 }
 
 // Delete Reservation from GUI
@@ -891,25 +944,42 @@ func (m *Repository) AdminDeleteReservation(w http.ResponseWriter, r *http.Reque
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	src := chi.URLParam(r, "src")
 	_ = m.DB.DeleteReservation(id)
-	m.App.Session.Put(r.Context(), "flash", "Reservation Deleted!!")
-	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
+
+	year := r.URL.Query().Get("y")
+	month := r.URL.Query().Get("m")
+
+	m.App.Session.Put(r.Context(), "flash", "Reservation deleted")
+
+	if year == "" {
+		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", year, month), http.StatusSeeOther)
+	}
 }
 
 // Display Calendar to Admin
 func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
+	// assume that there is no month/year specified
 	now := time.Now()
+
 	if r.URL.Query().Get("y") != "" {
 		year, _ := strconv.Atoi(r.URL.Query().Get("y"))
 		month, _ := strconv.Atoi(r.URL.Query().Get("m"))
 		now = time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
 	}
+
+	data := make(map[string]interface{})
+	data["now"] = now
+
 	next := now.AddDate(0, 1, 0)
 	last := now.AddDate(0, -1, 0)
+
 	nextMonth := next.Format("01")
 	nextMonthYear := next.Format("2006")
 
 	lastMonth := last.Format("01")
 	lastMonthYear := last.Format("2006")
+
 	stringMap := make(map[string]string)
 	stringMap["next_month"] = nextMonth
 	stringMap["next_month_year"] = nextMonthYear
@@ -918,7 +988,118 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 
 	stringMap["this_month"] = now.Format("01")
 	stringMap["this_month_year"] = now.Format("2006")
+
+	// get the first and last days of the month
+	currentYear, currentMonth, _ := now.Date()
+	currentLocation := now.Location()
+	firstOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
+	lastOfMonth := firstOfMonth.AddDate(0, 1, -1)
+
+	intMap := make(map[string]int)
+	intMap["days_in_month"] = lastOfMonth.Day()
+
+	rooms, err := m.DB.AllRooms()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data["rooms"] = rooms
+
+	for _, x := range rooms {
+		// create maps
+		reservationMap := make(map[string]int)
+		blockMap := make(map[string]int)
+
+		for d := firstOfMonth; d.After(lastOfMonth) == false; d = d.AddDate(0, 0, 1) {
+			reservationMap[d.Format("2006-01-2")] = 0
+			blockMap[d.Format("2006-01-2")] = 0
+		}
+
+		// get all the restrictions for the current room
+		restrictions, err := m.DB.GetRestrictionsForRoomByDate(x.ID, firstOfMonth, lastOfMonth)
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+
+		for _, y := range restrictions {
+			if y.ReservationID > 0 {
+				// it's a reservation
+				for d := y.StartDate; d.After(y.EndDate) == false; d = d.AddDate(0, 0, 1) {
+					reservationMap[d.Format("2006-01-2")] = y.ReservationID
+				}
+			} else {
+				// it's a block
+				blockMap[y.StartDate.Format("2006-01-2")] = y.ID
+			}
+		}
+		data[fmt.Sprintf("reservation_map_%d", x.ID)] = reservationMap
+		data[fmt.Sprintf("block_map_%d", x.ID)] = blockMap
+
+		m.App.Session.Put(r.Context(), fmt.Sprintf("block_map_%d", x.ID), blockMap)
+	}
+
 	render.Template(w, r, "admin_reservation_calender.html", &models.TemplateData{
 		StringMap: stringMap,
+		Data:      data,
+		IntMap:    intMap,
 	})
+}
+
+//Handle Reservation calender post
+func (m *Repository)AdminPostReservationsCalendar(w http.ResponseWriter,r *http.Request){
+	err := r.ParseForm()
+	if err!=nil{
+		helpers.ServerError(w,err)
+		return
+	}
+	year,_ := strconv.Atoi(r.Form.Get("y"))
+	month,_ := strconv.Atoi(r.Form.Get("m"))
+
+	//processing Calendar form
+	rooms,err := m.DB.AllRooms()
+	if err!=nil{
+		helpers.ServerError(w,err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	for _,x := range rooms{
+		//Get the block map for session loop through entire map & if we have entry in map 
+		//that doesnot exist in posted map and if restriction id>0,then it is a block we need
+		// to remove
+		curMap := m.App.Session.Get(r.Context(),fmt.Sprintf("block_map_%d",x.ID)).(map[string]int)
+		for name,value := range curMap{
+			// var ok will be false if value is not in map
+			if val,ok:=curMap[name];ok{
+				//only pay attention to value > 0 and that are not in post form
+				//the rest are placeholder for days w/o block
+				if val>0 {
+					if !form.Has(fmt.Sprintf("remove_block_%d_%s",x.ID,name)){
+						err := m.DB.DeleteBlockByID(value)
+						if err != nil {
+							log.Println(err)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// now handle new blocks
+	for name, _ := range r.PostForm {
+		if strings.HasPrefix(name, "add_block") {
+			exploded := strings.Split(name, "_")
+			roomID, _ := strconv.Atoi(exploded[2])
+			t, _ := time.Parse("2006-01-2", exploded[3])
+			// insert a new block
+			err := m.DB.InsertBlockForRoom(roomID, t)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
+
+	m.App.Session.Put(r.Context(),"flash","Changes Saved")
+	http.Redirect(w,r,fmt.Sprintf("/admin/reservations-calendar?y=%d&m=%d",year,month),http.StatusSeeOther)
 }

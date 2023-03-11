@@ -6,14 +6,15 @@ import "github.com/Shobhitdimri01/Bookings/internal/forms"
 //Template Data holds data send from handlers to templates
 type TemplateData struct{
 	StringMap  		   map[string]string
-	IntMap		  		map[string]int
+	IntMap		  	   map[string]int
 	FloatMap    	   map[string]float32
-	Data 				  map[string]interface{}
-	CSRFToken       string
-	Flash				  string
+	Data 			   map[string]interface{}
+	CSRFToken          string
+	Flash			   string
 	Warning			   string
-	Error                string
-	Form				*forms.Form
-	IsAuthenticated		int
+	Error              string
+	Form			   *forms.Form
+	IsAuthenticated	    int
 	Level				int
+	CurrentID			int
 }

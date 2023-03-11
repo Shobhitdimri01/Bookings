@@ -24,11 +24,15 @@ type DatabaseRepo interface {
 	DeleteReservation(id int)error
 	UpdateProcessedForReservation(id,processed int) error
 	CountReservation()(int,int,int)
-	CountMonths()
+	CountMonths()([]int,[]int)
 	InsertUserData(models.User) error
 	EmailCheck(email string)bool
 	GetAllAdmins()([]models.User,error)
 	GetAdminByID(id int)(models.User,error)
 	DeleteAdminByID(id int)error
 	UpdateAdminData(u models.User)error
+	AllRooms()([]models.Room,error)
+	GetRestrictionsForRoomByDate(roomID int,startDate,endDate time.Time)([]models.RoomRestriction,error)
+	InsertBlockForRoom(id int, startDate time.Time) error
+	DeleteBlockByID(id int) error
 }

@@ -40,6 +40,7 @@
     {{block "css" . }} {{end}}
   </head>
   <body>
+  {{$id := index .IntMap "active_id"}}
     <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -157,15 +158,15 @@
             </div>
           </li>
           <li class="nav-item nav-profile dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-              <img src="/static/admin/images/faces/face4.jpg" alt="profile"/>
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
+              <img src="/static/images/admin.jpeg" alt="profile"/>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
+              <a href="/admin/reservation/modify/{{$id}}" class="dropdown-item">
                 <i class="ti-settings text-primary"></i>
                 Settings
               </a>
-              <a class="dropdown-item">
+              <a href="/user/logout" class="dropdown-item">
                 <i class="ti-power-off text-primary"></i>
                 Logout
               </a>
@@ -184,7 +185,7 @@
         <ul class="nav">
           <li class="nav-item">
               <a class="nav-link" href="/admin/dashboard">
-                <i class="ti-shield menu-icon"></i>
+                <i class="ti-bar-chart-alt menu-icon"></i>
                 <span class="menu-title">Dashboard</span>
               </a>
             </li>
@@ -221,12 +222,6 @@
               <span class="menu-title">Reservation Calender</span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="pages/charts/chartjs.html">
-              <i class="ti-pie-chart menu-icon"></i>
-              <span class="menu-title">Charts</span>
-            </a>
-          </li>
         {{if eq .Level 3}} 
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
@@ -238,8 +233,17 @@
             <div class="collapse" id="auth">
               <ul class="nav flex-column sub-menu">
               
-                <li class="nav-item"> <a class="nav-link" href="/admin/user">Signup</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/admin/data">Modify User</a></li>
+                <li class="nav-item"> 
+                <a class="nav-link" href="/admin/user">
+                  <i class="ti-write"></i>
+                  <span>Signup</span>
+                </a>
+                </li>
+                <li class="nav-item"> 
+                <a class="nav-link" href="/admin/data">
+                  <i class="ti-ruler-pencil"></i>
+                  <span>Modify User</span>
+                </a></li>
                 
                 
               </ul>

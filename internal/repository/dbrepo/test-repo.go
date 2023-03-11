@@ -144,7 +144,8 @@ func (m *testDbRepo)UpdateProcessedForReservation(id,processed int) error{
 func (m *testDbRepo)CountReservation()(int,int,int){
 	return 1,1,1
 }
-func (m *testDbRepo)CountMonths(){
+func (m *testDbRepo)CountMonths()([]int,[]int){
+	return nil,nil
 }
 func (m *testDbRepo)InsertUserData(r models.User) error{
 	return nil
@@ -163,5 +164,17 @@ func (m *testDbRepo)DeleteAdminByID(id int)error{
 	return nil
 }
 func(m *testDbRepo)UpdateAdminData(u models.User)error{
+	return nil
+}
+func(m *testDbRepo)AllRooms()([]models.Room,error){
+	return nil,nil
+}
+func(m *testDbRepo)GetRestrictionsForRoomByDate(roomID int,startDate,endDate time.Time)([]models.RoomRestriction,error){
+	return nil,nil
+}
+func(m *testDbRepo)InsertBlockForRoom(id int, startDate time.Time) error{
+	return nil
+}
+func(m *testDbRepo)DeleteBlockByID(id int) error{
 	return nil
 }

@@ -50,9 +50,25 @@
             <a href="/admin/data" class="btn btn-warning">Cancel</a>
             </div>
         <div class="float-sm-end">
-                <a href="/admin/delete-admin/modify/{{$res.ID}}" class="btn btn-danger">Delete</a>
+            <a href="#!" class="btn btn-danger" onclick="deleteRes({{$res.ID}})">Delete</a>
         </div>
         <div class="clearfix"></div>
 
     </form>
+{{end}}
+{{define "js"}}
+    <script>
+        function deleteRes(id) {
+            attention.custom({
+                icon: 'warning',
+                msg: 'Are you sure?',
+                callback: function (result) {
+                    if (result !== false) {
+                        window.location.href = "/admin/delete-admin/modify/"
+                            + id;
+                    }
+                }
+            })
+        }
+    </script>
 {{end}}

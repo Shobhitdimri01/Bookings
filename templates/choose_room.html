@@ -11,8 +11,10 @@
     </header>
     {{$rooms := index .Data "rooms"}}
             {{ range $rooms}}
-    <a href="/choose-room/{{.ID}}" class="cover atvImg">{{.RoomName}}
-		<div class="atvImg-layer"  > <span class="ref">something</span>
+    <a href="/choose-room/{{.ID}}" class="cover atvImg">
+        
+		<div class="atvImg-layer"  > <span class="ref">{{.RoomName}}</span>
+            
             <!-- <div id="atvImg__0" data-img="/static/images/room1.jpg" alt=""></div> -->
         </div>
 	</a>

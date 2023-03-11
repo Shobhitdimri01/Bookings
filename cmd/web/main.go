@@ -57,6 +57,7 @@ func run() (*driver.DB, error) {
 	gob.Register(models.Room{})
 	gob.Register(models.User{})
 	gob.Register(models.Restriction{})
+	gob.Register(map[string]int{})
 
 	//creating channel for sending email
 	mailchan := make(chan models.MailData)
