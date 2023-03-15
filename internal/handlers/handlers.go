@@ -655,7 +655,7 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	// models.TemplateData.CurrentID := id
 	intMap := make(map[string]int)
 	intMap["active_id"] = id
-	fmt.Println("Access_level-------", render.Level)
+	fmt.Println("Access_level-------", render.Level,"\nID:",intMap["active_id"])
 	m.App.Session.Put(r.Context(), "user_id", id)
 	m.App.Session.Put(r.Context(), "flash", "Logged in Successfully")
 	// new added

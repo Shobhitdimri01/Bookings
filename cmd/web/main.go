@@ -3,6 +3,7 @@ package main
 import (
 	// "database/sql/driver"
 	"encoding/gob"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -59,6 +60,24 @@ func run() (*driver.DB, error) {
 	gob.Register(models.Restriction{})
 	gob.Register(map[string]int{})
 
+	//read flags
+	inProduction := flag.Bool("production",true,"App running in Production")
+	useCache := flag.Bool("cache",true,"Use template cache")
+	dbHost := flag.String("dbhost","localhost","Database host")
+	dbName := flag.String("dbname","","DataBase name")
+	dbUser := flag.String("dbuser","","Database user")
+	dbPass := flag.String("dbpass","","Database password")
+	dbPort := flag.String("dbport","5432","Database port")
+	dbSSL := flag.String("dbssl","disable","Database ssl settings(disable,prefer,require)")
+
+	flag.Parse()
+
+	if *dbName=="" || *dbUser==""{
+		fmt.Println("Missing required flags")
+		os.Exit(1 )
+	}
+	
+
 	//creating channel for sending email
 	mailchan := make(chan models.MailData)
 	app.MailChan = mailchan
@@ -69,7 +88,8 @@ func run() (*driver.DB, error) {
 	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	app.ErrorLog = errorLog
 	// change this to true when in production
-	app.InProduction = false
+	app.InProduction = *inProduction
+	app.UseCache = *useCache
 
 	// set up the session
 	session = scs.New()
@@ -82,7 +102,9 @@ func run() (*driver.DB, error) {
 
 	//Connect to Database
 	fmt.Println("\n\nConnecting to database.............")
-	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=postgres password=postgres")
+	connectionString := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",*dbHost,*dbPort,*dbName,*dbUser,*dbPass, *dbSSL)
+	// db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=postgres password=postgres")
+	db, err := driver.ConnectSQL(connectionString)
 	if err != nil {
 		log.Fatal("Cannot connect to database ! dying .....", err.Error())
 	}
@@ -97,7 +119,6 @@ func run() (*driver.DB, error) {
 	}
 
 	app.TemplateCache = tc
-	app.UseCache = false
 
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)

@@ -40,7 +40,7 @@
     {{block "css" . }} {{end}}
   </head>
   <body>
-  {{$id := index .IntMap "active_id"}}
+  {{$ids := index .IntMap "active_id"}}
     <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -162,7 +162,7 @@
               <img src="/static/images/admin.jpeg" alt="profile"/>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a href="/admin/reservation/modify/{{$id}}" class="dropdown-item">
+              <a href="/admin/reservation/modify/{{$ids}}" class="dropdown-item">
                 <i class="ti-settings text-primary"></i>
                 Settings
               </a>
