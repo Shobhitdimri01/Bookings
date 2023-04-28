@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 
-	//"log"
-	// "io/ioutil"
 	"io"
 	"os"
 
@@ -29,12 +26,16 @@ import (
 	"github.com/Shobhitdimri01/Bookings/internal/repository/dbrepo"
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
-//Charts
+
+	//Charts
+	"log"
+
 	"github.com/go-echarts/examples/examples"
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/components"
 	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/go-echarts/go-echarts/v2/types"
+	//Google
 )
 
 // Repo is repository used by handlers
@@ -221,8 +222,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	err = m.DB.InsertRoomRestriction(restriction)
 	if err != nil {
-		//helpers.ServerError(w, err)
-		fmt.Println("My error -->", err.Error())
+		helpers.ServerError(w, err)
 		return
 	}
 
@@ -230,14 +230,13 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	<strong>Reservation Confirmation </strong><br>
 	Dear %s,<br>
 	This is to confirm your reservation from %s to %s
-	
 	`, reservation.FirstName, reservation.StartDate.Format("2006-01-01"), reservation.EndDate.Format("2006-01-02"))
 
 	//send notification-first to  guest
 	msg := models.MailData{
 		To:       reservation.Email,
 		From:     "Shobhitdimri7@gmail.com",
-		Subject:  "Reservation Confirmation",
+		Subject:  "Reservation Confirmation Details",
 		Content:  htmlmessage,
 		Template: "basic.html",
 	}
@@ -272,7 +271,6 @@ func (m *Repository) AdminSignup(w http.ResponseWriter, r *http.Request) {
 		Password:    r.FormValue("password"),
 		AccessLevel: int(accesslevel),
 	}
-	fmt.Println("Access:-----------------------------", details.AccessLevel)
 	if !form.Valid() {
 		//TODO take user back to page
 		m.App.Session.Put(r.Context(), "error", "Invalid!")
@@ -286,7 +284,6 @@ func (m *Repository) AdminSignup(w http.ResponseWriter, r *http.Request) {
 	details.Password = password
 
 	AlreadyExist := m.DB.EmailCheck(details.Email)
-	fmt.Println("status:", AlreadyExist)
 	if AlreadyExist {
 		m.App.Session.Put(r.Context(), "error", "User Exist")
 		http.Redirect(w, r, "/admin/user", http.StatusSeeOther)
@@ -297,7 +294,6 @@ func (m *Repository) AdminSignup(w http.ResponseWriter, r *http.Request) {
 		m.App.Session.Put(r.Context(), "error", "Error")
 		fmt.Println(err)
 	}
-	m.App.InfoLog.Println(details)
 	m.App.Session.Put(r.Context(), "flash", "Signed up Successfully!")
 	http.Redirect(w, r, "/admin/dashboard", http.StatusSeeOther)
 
@@ -316,6 +312,7 @@ func (m *Repository) ShowAdmins(w http.ResponseWriter, r *http.Request) {
 		Data: data,
 	})
 }
+
 func (m *Repository) ShowModifyAdminUsers(w http.ResponseWriter, r *http.Request) {
 	exploded := strings.Split(r.RequestURI, "/")
 	id, err := strconv.Atoi(exploded[4])
@@ -323,7 +320,6 @@ func (m *Repository) ShowModifyAdminUsers(w http.ResponseWriter, r *http.Request
 		helpers.ServerError(w, err)
 		return
 	}
-	log.Println(id)
 	users, err := m.DB.GetAdminByID(id)
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -331,10 +327,13 @@ func (m *Repository) ShowModifyAdminUsers(w http.ResponseWriter, r *http.Request
 	}
 	data := make(map[string]interface{})
 	data["users"] = users
-	log.Println(users)
+	My_Level := make(map[string]string)
+	Key := strconv.Itoa(users.AccessLevel)
+	My_Level["access_level"] = models.Access[Key]
 	render.Template(w, r, "admin_edit.html", &models.TemplateData{
-		Data: data,
-		Form: forms.New(nil),
+		StringMap: My_Level,
+		Data:      data,
+		Form:      forms.New(nil),
 	})
 }
 func (m *Repository) AdminDeleteID(w http.ResponseWriter, r *http.Request) {
@@ -344,7 +343,6 @@ func (m *Repository) AdminDeleteID(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	log.Println(id)
 	err = m.DB.DeleteAdminByID(id)
 	if err != nil {
 		helpers.ServerError(w, err)
@@ -364,24 +362,25 @@ func (m *Repository) UpdateAdminInfo(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerError(w, err)
 		return
 	}
-	log.Println("------------------------",id)
 	accesslevel, _ := strconv.ParseInt(r.FormValue("access"), 10, 64)
-	fmt.Println("**************************************",accesslevel)
 	details := models.User{
-		FirstName: r.FormValue("first_name"),
-		LastName:  r.FormValue("last_name"),
-		Email:     r.FormValue("email"),
+		FirstName:   r.FormValue("first_name"),
+		LastName:    r.FormValue("last_name"),
+		Email:       r.FormValue("email"),
 		AccessLevel: int(accesslevel),
-		ID: id,
+		ID:          id,
 	}
-	fmt.Println("showdata-------",details)
 	err = m.DB.UpdateAdminData(details)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
 	m.App.Session.Put(r.Context(), "flash", "Admin Data Updated")
-	http.Redirect(w, r, "/admin/data", http.StatusSeeOther)
+	if render.Level == 3 {
+		http.Redirect(w, r, "/admin/data", http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "/admin/dashboard", http.StatusSeeOther)
+	}
 
 }
 
@@ -421,7 +420,7 @@ func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	if(startDate==endDate){
+	if startDate == endDate {
 		m.App.Session.Put(r.Context(), "warning", "Arrival & Departure Date Can't be Same")
 		http.Redirect(w, r, "/search-availability", http.StatusSeeOther)
 		return
@@ -440,8 +439,6 @@ func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 		m.App.InfoLog.Println("ROOM:", i.ID, " - ", i.RoomName)
 
 	}
-	m.App.InfoLog.Println("room_length---------------------------------------------------",len(rooms))
-	
 	////////////////////////////////////////////////////////////////////////////////////
 	if len(rooms) == 0 {
 		m.App.InfoLog.Println("Sorry !!!     Rooms fully Booked")
@@ -584,7 +581,6 @@ func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
 	roomID, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	sd := r.URL.Query().Get("s")
 	ed := r.URL.Query().Get("e")
-	log.Println(roomID)
 
 	layout := "2006-01-02"
 	startdate, err := time.Parse(layout, sd)
@@ -605,7 +601,6 @@ func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
 
 	room, _ := m.DB.GetRoomByID(roomID)
 	res.Room.RoomName = room.RoomName
-	m.App.InfoLog.Println("ROOM:", res.Room.RoomName)
 	m.App.Session.Put(r.Context(), "reservation", res)
 	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)
 
@@ -620,7 +615,6 @@ func (m *Repository) ShowLogin(w http.ResponseWriter, r *http.Request) {
 
 // Handles user login Authentication
 func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
-	log.Println("Logging Working ...")
 	//Renew Token prevent session fixation attack
 	_ = m.App.Session.RenewToken(r.Context())
 	err := r.ParseForm()
@@ -634,7 +628,6 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 
 	email := r.Form.Get("email")
 	password := r.Form.Get("password")
-	fmt.Println(password)
 	if !form.Valid() {
 		//TODO take user back to page
 		render.Template(w, r, "login.html", &models.TemplateData{
@@ -644,7 +637,7 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id, _, accesslevel, err := m.DB.Authenticate(email, password)
-
+	render.Userid = strconv.Itoa(id)
 	if err != nil {
 		log.Println(err)
 		m.App.Session.Put(r.Context(), "error", "Invalid login credential")
@@ -652,25 +645,28 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.Level = accesslevel
-	// models.TemplateData.CurrentID := id
-	intMap := make(map[string]int)
-	intMap["active_id"] = id
-	fmt.Println("Access_level-------", render.Level,"\nID:",intMap["active_id"])
+
 	m.App.Session.Put(r.Context(), "user_id", id)
 	m.App.Session.Put(r.Context(), "flash", "Logged in Successfully")
 	// new added
-	render.Template(w, r, "home.html", &models.TemplateData{
-		IntMap: intMap,
-	})
-	// http.Redirect(w, r, "/", http.StatusSeeOther)
+	// render.Template(w, r, "home.html", &models.TemplateData{})
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+// func Profile(w http.ResponseWriter, r *http.Request) {
+// 	intMap := make(map[string]int)
+// 	intMap["active_id"] = Userid
+// 	fmt.Println("Access_level-------", render.Level, "\nID:", intMap["active_id"])
+// 	// render.Template(w, r, "home.html", &models.TemplateData{
+// 	// 	IntMap: intMap,
+// 	// })
+// }
 
 // Destroys session
 func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	_ = m.App.Session.Destroy(r.Context())
 	_ = m.App.Session.RenewToken(r.Context())
 	render.LoggedIn = false
-
 	m.App.Session.Put(r.Context(), "warning", "Logged Out Successfully")
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
@@ -684,7 +680,6 @@ var (
 
 func (m *Repository) CountRes() (int, int, int) {
 	total_reservation_count, del_res, sun_res := m.DB.CountReservation()
-	m.App.InfoLog.Println("count is :", total_reservation_count, "\nDeluxe King Room :", del_res, "\nSunset_Room : ", sun_res)
 	return total_reservation_count, del_res, sun_res
 }
 func generatePieItems() []opts.PieData {
@@ -711,40 +706,39 @@ func pieShowLabel() *charts.Pie {
 		)
 	return pie
 }
-//
-var CurrentMonth []string 
+
+var CurrentMonth []string
 var Data []int
-func (m *Repository) MonthCount(){
+
+func (m *Repository) MonthCount() {
 	//to avoid duplicacy error in bar
 	CurrentMonth = nil
 	Data = nil
 	Months := map[int]string{
-     
-		1: "Jan",
-		2: "Feb",
-		3: "Mar",
-		4: "Apr",
-		5: "May",
-		6: "Jun",
-		7: "Jul",
-		8: "Aug",
-		9: "Sep",
+
+		1:  "Jan",
+		2:  "Feb",
+		3:  "Mar",
+		4:  "Apr",
+		5:  "May",
+		6:  "Jun",
+		7:  "Jul",
+		8:  "Aug",
+		9:  "Sep",
 		10: "Oct",
 		11: "Nov",
 		12: "Dec",
 	}
 
-	month,BookingCount := m.DB.CountMonths()
-	
-	for i,_ := range month{
-		CurrentMonth = append(CurrentMonth,Months[month[i]])
-		m.App.InfoLog.Println("Mapping",Months[month[i]])
+	month, BookingCount := m.DB.CountMonths()
+
+	for i, _ := range month {
+		CurrentMonth = append(CurrentMonth, Months[month[i]])
 	}
-	for i,_ := range BookingCount{
-		Data = append(Data,BookingCount[i])
-		m.App.InfoLog.Println("Data",BookingCount[i])
+	for i, _ := range BookingCount {
+		Data = append(Data, BookingCount[i])
 	}
-} 
+}
 func generateBarItems() []opts.BarData {
 	items := make([]opts.BarData, 0)
 	for i := 0; i < len(CurrentMonth); i++ {
@@ -753,11 +747,11 @@ func generateBarItems() []opts.BarData {
 	return items
 }
 func barWithTheme(theme string) *charts.Bar {
-	year, _,_ := time.Now().Date()
+	year, _, _ := time.Now().Date()
 	bar := charts.NewBar()
 	bar.SetGlobalOptions(
 		charts.WithInitializationOpts(opts.Initialization{Theme: theme}),
-		charts.WithTitleOpts(opts.Title{Title: fmt.Sprintf("Room Count Month-Wise for Year - %d",year)}),
+		charts.WithTitleOpts(opts.Title{Title: fmt.Sprintf("Room Count Month-Wise for Year - %d", year)}),
 	)
 	bar.SetXAxis(CurrentMonth).
 		AddSeries("Category B", generateBarItems())
@@ -766,7 +760,6 @@ func barWithTheme(theme string) *charts.Bar {
 func themeVintage() *charts.Bar {
 	return barWithTheme(types.ThemeVintage)
 }
-
 
 func geoBase() *charts.Geo {
 	geo := charts.NewGeo()
@@ -807,11 +800,9 @@ func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 	for _, e := range examplers {
 		e.Examples()
 	}
-	fmt.Println("Access_level -------", render.Level)
 	render.Template(w, r, "admin.html", &models.TemplateData{})
 	// render.Template(w, r, "admin_signup.html", &models.TemplateData{})
 }
-
 
 func (m *Repository) ChartLoad(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "pie.html", &models.TemplateData{})
@@ -856,9 +847,8 @@ func (m *Repository) AdminShowReservations(w http.ResponseWriter, r *http.Reques
 		helpers.ServerError(w, err)
 		return
 	}
-	log.Println(id)
 	src := exploded[3]
-	
+
 	stringMap := make(map[string]string)
 	stringMap["src"] = src
 	year := r.URL.Query().Get("y")
@@ -1047,35 +1037,35 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 	})
 }
 
-//Handle Reservation calender post
-func (m *Repository)AdminPostReservationsCalendar(w http.ResponseWriter,r *http.Request){
+// Handle Reservation calender post
+func (m *Repository) AdminPostReservationsCalendar(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
-	if err!=nil{
-		helpers.ServerError(w,err)
+	if err != nil {
+		helpers.ServerError(w, err)
 		return
 	}
-	year,_ := strconv.Atoi(r.Form.Get("y"))
-	month,_ := strconv.Atoi(r.Form.Get("m"))
+	year, _ := strconv.Atoi(r.Form.Get("y"))
+	month, _ := strconv.Atoi(r.Form.Get("m"))
 
 	//processing Calendar form
-	rooms,err := m.DB.AllRooms()
-	if err!=nil{
-		helpers.ServerError(w,err)
+	rooms, err := m.DB.AllRooms()
+	if err != nil {
+		helpers.ServerError(w, err)
 		return
 	}
 	form := forms.New(r.PostForm)
-	for _,x := range rooms{
-		//Get the block map for session loop through entire map & if we have entry in map 
+	for _, x := range rooms {
+		//Get the block map for session loop through entire map & if we have entry in map
 		//that doesnot exist in posted map and if restriction id>0,then it is a block we need
 		// to remove
-		curMap := m.App.Session.Get(r.Context(),fmt.Sprintf("block_map_%d",x.ID)).(map[string]int)
-		for name,value := range curMap{
+		curMap := m.App.Session.Get(r.Context(), fmt.Sprintf("block_map_%d", x.ID)).(map[string]int)
+		for name, value := range curMap {
 			// var ok will be false if value is not in map
-			if val,ok:=curMap[name];ok{
+			if val, ok := curMap[name]; ok {
 				//only pay attention to value > 0 and that are not in post form
 				//the rest are placeholder for days w/o block
-				if val>0 {
-					if !form.Has(fmt.Sprintf("remove_block_%d_%s",x.ID,name)){
+				if val > 0 {
+					if !form.Has(fmt.Sprintf("remove_block_%d_%s", x.ID, name)) {
 						err := m.DB.DeleteBlockByID(value)
 						if err != nil {
 							log.Println(err)
@@ -1100,6 +1090,6 @@ func (m *Repository)AdminPostReservationsCalendar(w http.ResponseWriter,r *http.
 		}
 	}
 
-	m.App.Session.Put(r.Context(),"flash","Changes Saved")
-	http.Redirect(w,r,fmt.Sprintf("/admin/reservations-calendar?y=%d&m=%d",year,month),http.StatusSeeOther)
+	m.App.Session.Put(r.Context(), "flash", "Changes Saved")
+	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%d&m=%d", year, month), http.StatusSeeOther)
 }

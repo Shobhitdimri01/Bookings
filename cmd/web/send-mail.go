@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+
 	// "net/smtp"
 	"strings"
 	"time"
@@ -24,10 +25,11 @@ func ListenforMail() {
 	}()
 }
 
-//Sending Mail via Go-Simple-Mail
+// Sending Mail via Go-Simple-Mail
 func sendmsg(m models.MailData) {
-	password := "exrcnmmmausvfbol"
- 	gmail := "smtp.gmail.com"
+
+	password := "vafbhzgkwtaylsbg"
+	gmail := "smtp.gmail.com"
 	server := mail.NewSMTPClient()
 	server.Host = gmail
 	server.Port = 587
@@ -58,7 +60,6 @@ func sendmsg(m models.MailData) {
 	// to skip TLS verification (useful for testing):
 	// server.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 
-
 	client, err := server.Connect()
 	if err != nil {
 		errorLog.Println(err)
@@ -81,17 +82,16 @@ func sendmsg(m models.MailData) {
 		email.SetBody(mail.TextHTML, msgTosend)
 	}
 
-	 err = email.Send(client)
+	err = email.Send(client)
 	if err != nil {
 		log.Println(err.Error())
+
 	} else {
 		log.Println("Email sent !")
 	}
 }
 
-
-
-//Sending mail via Simple SMTP Server
+//Alternative way Sending mail via Simple SMTP Server
 //SMTP Server
 // func SMTPEmail(m models.MailData) {
 // 	password := "exrcnmmmausvfbol"

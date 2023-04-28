@@ -1,7 +1,7 @@
 {{template "admin" .}}
 
 {{define "page-title"}}
-    Reservation
+<strong><u>Reservation</u></strong>
 {{end}}
 
 {{define "content"}}
@@ -104,7 +104,7 @@
                 msg: 'Are you sure?',
                 callback: function (result) {
                     if (result !== false) {
-                        window.location.href = "/admin/delete-reservation/{src}/"
+                        window.location.href = "/admin/delete-reservation/{{$src}}/"
                             + id
                             + "/do?y={{index .StringMap "year"}}&m={{index .StringMap "month"}}";
                     }

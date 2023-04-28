@@ -1,10 +1,11 @@
 {{template "admin" .}}
 
 {{define "page-title"}}
-    Edit Admin Page
+<strong><u>Edit User</u></strong>
 {{end}}
 {{define "content"}}
     {{$res := index .Data "users"}}
+    {{$my_level := index .StringMap "access_level"}}
     <!-- -->
     <form action="/admin/update/admin-data/{{$res.ID}}" method="post"  novalidate>
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
@@ -35,23 +36,33 @@
                    autocomplete="off" type='email'
                    name='email' value="{{$res.Email}}" required>
         </div>
+        {{if eq .Level 3}}
         <div class="form-group">
             <label for="email">Access Level:</label>
             <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="access" >
-                <option selected selected disabled hidden>Select Admin Level</option>
-                <option value="1">Employee</option>
-                <option value="2">Admin</option>
-                <option value="3">Super Admin</option>
+                <option value="none" selected disabled hidden>{{$my_level}}</option>
+                <option value="1">User</option>
+                <option value="2">Employee</option>
+                <option value="3">Admin</option>
               </select>
         </div>
+        {{else}}
+        {{end}}
         <hr>
         <div class="float-left">
+            {{if eq .Level 3}}
             <input type="submit" class="btn btn-primary" value="Save">
+            
             <a href="/admin/data" class="btn btn-warning">Cancel</a>
             </div>
         <div class="float-sm-end">
             <a href="#!" class="btn btn-danger" onclick="deleteRes({{$res.ID}})">Delete</a>
         </div>
+        {{else}}
+        <input type="submit" class="btn btn-primary" href="/admin/dashboard" value="Save">
+        <a href="/admin/dashboard" class="btn btn-warning">Cancel</a>
+            </div>
+        {{end}}
         <div class="clearfix"></div>
 
     </form>

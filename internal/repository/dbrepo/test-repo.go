@@ -148,7 +148,7 @@ func (m *testDbRepo)CountMonths()([]int,[]int){
 	return nil,nil
 }
 func (m *testDbRepo)InsertUserData(r models.User) error{
-	return nil
+	return nil  
 }
 func(m *testDbRepo)EmailCheck(email string)bool{
 	return true

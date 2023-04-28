@@ -1,300 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
-   
-    <!-- endinject -->
-    <!-- plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <link rel="shortcut icon" href="/static/admin/images/favicon.png" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-       
-    {{block "css" . }} {{end}}
-  </head>
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
-    .content-wrapper {
-                background: rgb(234, 234, 234);
-            }
-            label {
-                font-weight: bold;
-            }
-            .notie-container {
-                z-index: 50000;
-            }
-body {
-  background: rgb(175, 190, 225);
-  background: linear-gradient(150deg, rgb(223, 156, 0) 0%, rgb(138, 85, 163) 100%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  color: white;
-  font-family: "Inter", sans-serif;
-  margin: 0;
-  padding: 0;
-}
+{{template "admin" .}}
 
-.main-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.title {
-  font-size: 48px;
-  margin-bottom: 0;
-  font-style: italic;
-  font-family: ui-monospace;
-  text-decoration: underline;
-}
-
-.content__input--form {
-  display: flex;
-  flex-direction: column;
-}
-
-.content__input--form > label > input {
-  box-sizing: border-box;
-  font-family: "Inter";
-  width: 300px;
-  height: 40px;
-  margin-bottom: 30px;
-  padding-left: 20px;
-  border: none;
-  border-radius: 67px;
-  background-color: rgba(255, 255, 255, 0.4);
-  color: white;
-  outline: none;
-}
-
-.content__input--form > label > input::placeholder {
-  color: white;
-  font-size: 14px;
-}
-
-.content__submit > .button {
-  height: 40px;
-  width: 300px;
-  border: none;
-  border-radius: 13px;
-  margin-bottom: 30px;
-  font-family: "Inter";
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.content__submit > .google-button {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background-color: #4385F5;
-  color: white;
-  overflow: hidden;
-}
-
-.google-button__google-icon {
-  background-color: white;
-  background-image: url("https://img.icons8.com/color/50/000000/google-logo.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 35px;
-  height: 100%;
-  width: 20%;
-  margin-right: 30px;
-  cursor: pointer;
-}
-
-.no-select {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
-}
-
-.content__submit--line {
-  width: 60%;
-  height: 1px;
-  background-color: white;
-}
-
-.content__submit > p, .content__footer p {
-  font-weight: 200;
-}
-
-.content__footer p {
-  font-size: 13px;
-  text-align: center;
-}
-
-a {
-  text-decoration: none;
-  color: white;
-}
-
-@media screen and (max-width: 800px) {
-  .main-container {
-    margin: 0px 20px;
-  }
-
-  .content__input--form {
-    margin-top: 80px;
-    align-items: center;
-  }
-
-  .content__submit {
-    margin-top: 60px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
- 
-  .content__footer {
-    margin-top: 100px;
-  }
-}
-
-@media screen and (min-width: 801px) {
-
-  .main-container__content {
-    margin-top: 5%;
-    box-sizing: border-box;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-    width: 90%;
-    height: 400px;
-    padding: 5%;
-  }
-  
-  .content__inputs {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-    height: 100%;
-    transform: translate(0, 5%);
-  }
-  
-  .content__submit {
-    width: 50%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px solid white;
-  }
-  
-  .content__footer {
-    width: 90%;
-  }
-}
-
-</style>
-<div>
-    <a href="/admin/dashboard" class="btn btn-info btn-lg">
-        <span class=></span><-
-      </a>
-</div>
-<div class="main-container">
-    <h1 class="title">Sign up</h1>
-    
-    <div class="main-container__content">
-      <div class="content__inputs">
-        <form method="post" action="/admin/signup" class="content__input--form" novalidate >
-            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-          <label for="First-name">
-            <input type="text" placeholder="First Name" name="first_name" autocomplete="off">
-          </label>
-          <label for="Last-name">
-            <input type="text" placeholder="Last Name" name="last_name" autocomplete="off">
-          </label>
-          <label for="email">
-            <input type="email" placeholder="Email" name="email" autocomplete="off">
-          </label>
-          <label for="password">
-            <input type="password" placeholder="Password" name="password" autocomplete="off">
-          </label>
-          <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="access">
-            <option selected >Select Admin Level</option>
-            <option value="1">Employee</option>
-            <option value="2">Admin</option>
-            <option value="3">Owner</option>
-          </select>
-            </div>
-      <div class="content__submit">
-        <button class="button">Sign up</button>
-        <div class="button google-button">
-          <div class="google-button__google-icon"></div>
-          <p class="no-select">Sign up with Google</p>
+{{define "page-title"}}
+    <strong><u>Registeration form</u></strong>
+{{end}}
+{{define "content"}}
+    <form action="/admin/signup" method="post"  autocomplete="off" novalidate>
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        <div class="form-group mt-3">
+            <label for="first_name">First Name:</label>
+            <input class="form-control"
+                   id="first_name" autocomplete="off" type='text'
+                   name='first_name'  required>
         </div>
-        <div class="content__submit--line"></div>
-        <p>
-          Already have an account? 
-          <a href="/user/login">
-            <strong>Login</strong>
-          </a>
-        </p>
-        <div class="content__footer">
-          <p>
-            By clicking "Sign up" button above you agree to our
-            <a href="/">
-              <strong>terms of use</strong>
-            </a>
+        <div class="form-group">
+            <label for="last_name">Last Name:</label>
+            <input class="form-control"
+                   id="last_name" autocomplete="off" type='text'
+                   name='last_name'  required>
         </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input class="form-control"
+                   autocomplete='none' type='email'
+                   name='email'  required>
+        </div>
+        <div class="form-group">
+          <label for="Password">Password:</label>
+          <input class="form-control"
+                 autocomplete='none'  type='password'
+                 name='password'  required>
       </div>
-    </div>
-  </div>
-   <!-- Custom js for this page-->
-   <script src="https://unpkg.com/notie"></script>
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-   <script src="/static/js/app.js"></script>
-   <!-- End custom js for this page-->
-    <script>
-       let attention = Prompt();
+        <div class="form-group">
+            <label for="email">Access Level:</label>
+            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="access" >
+                <option value="1">User</option>
+                <option value="2">Employee</option>
+                <option value="3">Admin</option>
+              </select>
+        </div>
+        <hr>
+        <div class="float-left">
+            <input type="submit" class="btn btn-primary" value="Sign up">
+            <div class="float-sm-end">
+            <a href="/admin/dashboard" class="btn btn-warning">Cancel</a>
+          </div>
+            <p>
+              Already have an account? 
+              <a href="/user/login">
+                <strong>Login</strong>
+              </a>
+            </p>
+            </div>
+            
+        <div class="clearfix"></div>
 
-       function notify(msg, msgType) {
-           notie.alert({
-               type: msgType,
-               text: msg,
-           })
-       }
-
-       function notifyModal(title, text, icon, confirmationButtonText) {
-           Swal.fire({
-               title: title,
-               html: text,
-               icon: icon,
-               confirmButtonText: confirmationButtonText
-           })
-       }
-
-       {{with .Error}}
-       notify("{{.}}", "error")
-       {{end}}
-
-       {{with .Flash}}
-       notify("{{.}}", "success")
-       {{end}}
-
-       {{with .Warning}}
-       notify("{{.}}", "warning")
-       {{end}}
-
-   </script>
-   </body>
-
-   </html>
-
- 
-
-    
-  
+    </form>
+{{end}}

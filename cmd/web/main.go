@@ -18,7 +18,9 @@ import (
 	"github.com/alexedwards/scs/v2"
 )
 
-const portNumber = ":8082"
+const MyIP = ":8080"
+
+// const MyIP = ":8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
@@ -35,15 +37,15 @@ func main() {
 
 	defer close(app.MailChan)
 
-	fmt.Println("Starting mail listener....")
+	fmt.Println("\t\t\tStarting mail listener....")
 	ListenforMail()
 
 	fmt.Println("============================================================================================================")
-	fmt.Printf("\t\tRunning application on port %s ...........\n", portNumber)
+	fmt.Printf("\t\tRunning application on port %s ...........\n", MyIP)
 	fmt.Println("============================================================================================================")
-
 	srv := &http.Server{
-		Addr:    portNumber,
+		// Addr:    portNumber,
+		Addr:    MyIP,
 		Handler: routes(&app),
 	}
 
@@ -61,22 +63,21 @@ func run() (*driver.DB, error) {
 	gob.Register(map[string]int{})
 
 	//read flags
-	inProduction := flag.Bool("production",true,"App running in Production")
-	useCache := flag.Bool("cache",true,"Use template cache")
-	dbHost := flag.String("dbhost","localhost","Database host")
-	dbName := flag.String("dbname","","DataBase name")
-	dbUser := flag.String("dbuser","","Database user")
-	dbPass := flag.String("dbpass","","Database password")
-	dbPort := flag.String("dbport","5432","Database port")
-	dbSSL := flag.String("dbssl","disable","Database ssl settings(disable,prefer,require)")
+	inProduction := flag.Bool("production", true, "App running in Production")
+	useCache := flag.Bool("cache", true, "Use template cache")
+	dbHost := flag.String("dbhost", "localhost", "Database host")
+	dbName := flag.String("dbname", "", "DataBase name")
+	dbUser := flag.String("dbuser", "", "Database user")
+	dbPass := flag.String("dbpass", "", "Database password")
+	dbPort := flag.String("dbport", "5432", "Database port")
+	dbSSL := flag.String("dbssl", "disable", "Database ssl settings(disable,prefer,require)")
 
 	flag.Parse()
 
-	if *dbName=="" || *dbUser==""{
+	if *dbName == "" || *dbUser == "" {
 		fmt.Println("Missing required flags")
-		os.Exit(1 )
+		os.Exit(1)
 	}
-	
 
 	//creating channel for sending email
 	mailchan := make(chan models.MailData)
@@ -101,8 +102,8 @@ func run() (*driver.DB, error) {
 	app.Session = session
 
 	//Connect to Database
-	fmt.Println("\n\nConnecting to database.............")
-	connectionString := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",*dbHost,*dbPort,*dbName,*dbUser,*dbPass, *dbSSL)
+	fmt.Println("Trying to Connect to database.............")
+	connectionString := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s", *dbHost, *dbPort, *dbName, *dbUser, *dbPass, *dbSSL)
 	// db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=postgres password=postgres")
 	db, err := driver.ConnectSQL(connectionString)
 	if err != nil {

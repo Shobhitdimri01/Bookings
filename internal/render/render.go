@@ -20,6 +20,7 @@ var functions = template.FuncMap{
 	"formatDate":FormatDate,
 	"iterate":iterate,
 	"add":Add,
+	"userid":GetuserID,
 }
 var pathtoTemplates = "./templates"
 
@@ -50,6 +51,10 @@ func HumanDate(t time.Time) string {
 func FormatDate(t time.Time,f string)string{
 	return t.Format(f)
 }
+var Userid string
+func GetuserID()string{
+	return Userid
+}
 var( LoggedIn bool 
 	Level int)
 
@@ -59,8 +64,6 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 	td.Error = app.Session.PopString(r.Context(), "error")
 	td.CSRFToken = nosurf.Token(r)
 	td.Level = Level
-	
-	fmt.Println("My access Level is : ", td.Level)
 	if app.Session.Exists(r.Context(), "user_id") {
 		td.IsAuthenticated = 1
 		LoggedIn = true

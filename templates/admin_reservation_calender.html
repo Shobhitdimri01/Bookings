@@ -1,7 +1,7 @@
 {{template "admin" .}}
 
 {{define "page-title"}}
-    Reservation Calendar
+<strong><u>Reservation Calendar</u></strong>
 {{end}}
 
 {{define "content"}}
@@ -51,7 +51,7 @@
 
           <h4 class="mt-4">{{.RoomName}}</h4>
 
-          <div class="table-response">
+          <div class="table-responsive">
               <table class="table table-bordered table-sm">
                   <tr class="table-warning">
                       {{range $index := iterate $dim}}

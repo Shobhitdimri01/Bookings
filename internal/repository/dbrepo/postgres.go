@@ -401,13 +401,11 @@ func (m *postgresDBRepo) GetAdminByID(id int) (models.User, error) {
 	if err != nil {
 		return admin, err
 	}
-	fmt.Println("All-Data:", admin)
 	return admin, nil
 }
 func (m *postgresDBRepo) UpdateAdminData(u models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	fmt.Println("Hellooooooooooooooooooooooo", u.ID)
 	query := `UPDATE public.users
 	SET first_name=$1, last_name=$2, email=$3, access_level=$4 WHERE id=$5;`
 	_, err := m.DB.ExecContext(ctx, query,
@@ -458,7 +456,6 @@ func (m *postgresDBRepo) GetAllAdmins() ([]models.User, error) {
 		if err != nil {
 			return admin, err
 		}
-		fmt.Println(i)
 		admin = append(admin, i)
 	}
 	if err = rows.Err(); err != nil {
@@ -581,7 +578,7 @@ func (m *postgresDBRepo) CountReservation() (total_res, del_res, sun_res int) {
 	return total_res, del_res, sun_res
 }
 
-func (m *postgresDBRepo) CountMonths()([]int,[]int) {
+func (m *postgresDBRepo) CountMonths() ([]int, []int) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	var Month []int
@@ -591,7 +588,7 @@ func (m *postgresDBRepo) CountMonths()([]int,[]int) {
 	FROM reservations
 	GROUP BY EXTRACT('MONTH' FROM start_date) order by month asc;`
 	rows, _ := m.DB.QueryContext(ctx, query)
-	for rows.Next(){
+	for rows.Next() {
 		var a int
 		var b int
 
@@ -599,15 +596,14 @@ func (m *postgresDBRepo) CountMonths()([]int,[]int) {
 			&a,
 			&b,
 		)
-		if err!= nil{
+		if err != nil {
 			fmt.Println(err)
 		}
 		Month = append(Month, a)
 		BookingCount = append(BookingCount, b)
 	}
-	m.App.InfoLog.Println("Month:",Month,"Booking:",BookingCount)
-	return Month,BookingCount
-	
+	return Month, BookingCount
+
 }
 func (m *postgresDBRepo) InsertUserData(r models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -633,18 +629,18 @@ func (m *postgresDBRepo) InsertUserData(r models.User) error {
 	}
 	return nil
 }
-func (m *postgresDBRepo)AllRooms()([]models.Room,error){
+func (m *postgresDBRepo) AllRooms() ([]models.Room, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	var rooms []models.Room
 	query := `Select id,room_name,created_at,updated_at from rooms order by room_name`
-	row,err :=m.DB.QueryContext(ctx,query)
-	if err!=nil{
-		return rooms,err
+	row, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return rooms, err
 	}
 	defer row.Close()
 
-	for row.Next(){
+	for row.Next() {
 		var i models.Room
 		err := row.Scan(
 			&i.ID,
@@ -652,17 +648,16 @@ func (m *postgresDBRepo)AllRooms()([]models.Room,error){
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		)
-		if err!= nil{
-			return rooms,err
+		if err != nil {
+			return rooms, err
 		}
 		rooms = append(rooms, i)
 	}
-	if err!=nil{
-		return rooms,err
+	if err != nil {
+		return rooms, err
 	}
-	return rooms,nil
+	return rooms, nil
 }
-
 
 // GetRestrictionsForRoomByDate returns restrictions for a room by date range
 func (m *postgresDBRepo) GetRestrictionsForRoomByDate(roomID int, startDate, endDate time.Time) ([]models.RoomRestriction, error) {
@@ -670,18 +665,16 @@ func (m *postgresDBRepo) GetRestrictionsForRoomByDate(roomID int, startDate, end
 	defer cancel()
 
 	var restrictions []models.RoomRestriction
-	fmt.Println("Helloooo")
 	query := `
 		select id, coalesce(reservation_id, 0), restriction_id, room_id, start_date, end_date
 		from room_restriction where $1 < end_date and $2 >= start_date
 		and room_id = $3
 `
 
-	rows, err := m.DB.QueryContext(ctx, query,startDate, endDate,roomID)
+	rows, err := m.DB.QueryContext(ctx, query, startDate, endDate, roomID)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("rows",rows)
 	defer rows.Close()
 	for rows.Next() {
 		var r models.RoomRestriction
@@ -693,19 +686,18 @@ func (m *postgresDBRepo) GetRestrictionsForRoomByDate(roomID int, startDate, end
 			&r.StartDate,
 			&r.EndDate,
 		)
-		fmt.Println("Myerr",err)
 		if err != nil {
 			return nil, err
 		}
 		restrictions = append(restrictions, r)
 	}
-	fmt.Println("restriction",restrictions)
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
 	return restrictions, nil
 }
+
 // InsertBlockForRoom inserts a room restriction
 func (m *postgresDBRepo) InsertBlockForRoom(id int, startDate time.Time) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

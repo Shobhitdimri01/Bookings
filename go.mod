@@ -13,10 +13,13 @@ require (
 	github.com/justinas/nosurf v1.1.1
 	github.com/xhit/go-simple-mail/v2 v2.12.0
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
+	golang.org/x/oauth2 v0.6.0
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.2.0 // indirect
 	github.com/go-test/deep v1.1.0 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -25,5 +28,8 @@ require (
 	github.com/jackc/pgtype v1.12.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/protobuf v1.28.0 // indirect
 )

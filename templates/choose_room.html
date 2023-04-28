@@ -11,13 +11,22 @@
     </header>
     {{$rooms := index .Data "rooms"}}
             {{ range $rooms}}
-    <a href="/choose-room/{{.ID}}" class="cover atvImg">
-        
-		<div class="atvImg-layer"  > <span class="ref">{{.RoomName}}</span>
-            
-            <!-- <div id="atvImg__0" data-img="/static/images/room1.jpg" alt=""></div> -->
-        </div>
-	</a>
+   
+            <div class="cards-list">
+                <a href="/choose-room/{{.ID}}">
+                <div class="card 3">
+                  <div class="card_image">
+                    <img src="/static/images/room_animation.gif" />
+                  </div>
+                  <div class="card_title">
+                    <p>{{.RoomName}}</p>
+                  </div>
+                </div>
+            </a>
+                </div>
+
+      </div>
+      </article>
     {{end}}
 </div>
 </body>
