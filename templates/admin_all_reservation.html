@@ -12,7 +12,7 @@
     <div class="col-md-12">
         {{$res := index .Data "reservations"}}
 
-        <table class="table table-responsive table-hover" id="all-res">
+        <table class="table-responsive" id="all-res">
             <thead>
             <tr>
                 <th>ID</th>
@@ -47,6 +47,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             const dataTable = new simpleDatatables.DataTable("#all-res", {
                 select: 3, sort: "desc",
+                
             })
         })
     </script>

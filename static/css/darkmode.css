@@ -1,0 +1,58 @@
+.navbar-toggler{
+    color:black;
+    }
+
+    * {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+}
+
+.darkmodes{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  position: relative;
+}
+
+ .darkmodes .icons i{
+  position: absolute;
+  right: 17px;
+  top: 17px;
+  height: 20px;
+  width: 20px;
+  background: #24292D;
+  color: #fff;
+  text-align: center;
+  line-height: 20px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+}
+.darkmodes .container .icons i{
+  background: #fff;
+  color: #323840;
+}
+.darkmodes .icons i.fa-sun{
+  opacity: 0;
+  pointer-events: none;
+}
+.dark .darkmodes .icons i.fa-sun{
+  opacity: 1;
+  pointer-events: auto;
+  font-size: 16px;
+}
+
+body.dark {
+	background-color: #292929;
+  color: white;
+}
+
+.darkmodes{
+  position:absolute; 
+  right:10px; 
+}

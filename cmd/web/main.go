@@ -18,7 +18,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 )
 
-const MyIP = ":8080"
+const MyIP = ":3000"
 
 // const MyIP = ":8080"
 
